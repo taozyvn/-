@@ -174,6 +174,7 @@ void Widget::initButton(int x, int y, int type)
                 icons[7]->move((x+0.75*deviationX+0.15)*blockWidth,(y+0.15)*blockWidth);
                 icons[10]->move((x+0.15)*blockWidth,(y+0.75+0.15)*blockWidth);
                 icons[11]->move((x+0.15)*blockWidth,(y-0.75+0.15)*blockWidth);
+                break;
                 case 0:
                 icons[7]->move((x+0.15)*blockWidth,(y+0.75+0.15)*blockWidth);
                 icons[10]->move((x+0.75+0.15)*blockWidth,(y+0.15)*blockWidth);

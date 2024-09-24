@@ -7,6 +7,7 @@
 #include <enemys.h>
 #include <QPushButton>
 #include <tower.h>
+#include <settlement.h>
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE

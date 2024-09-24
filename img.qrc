@@ -85,5 +85,15 @@
         <file>cannon/default.png</file>
         <file>cannon/sell.png</file>
         <file>cannon/upLevel.png</file>
+        <file>map/died.png</file>
+        <file>map/stars.png</file>
+        <file>map/win-1.png</file>
+        <file>map/win-2.png</file>
+        <file>map/win-3.png</file>
+        <file>map/win-4.png</file>
+        <file>map/false.png</file>
+        <file>map/true.png</file>
+        <file>map/ok.png</file>
+        <file>map/ok_hover.png</file>
     </qresource>
 </RCC>
