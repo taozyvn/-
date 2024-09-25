@@ -12,7 +12,7 @@ public:
     int angle=0;//炮口角度
     int fireSpeed;//攻击速度
     int damage;//攻击力
-    int range;//攻击范围
+    double range;//攻击范围
     int startTime;//建造的时间
     int enemy[2]={0};//瞄准的敌人
     QPoint place;//塔的位置

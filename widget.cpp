@@ -14,7 +14,7 @@ Widget::Widget(QWidget *parent)
     ui->setupUi(this);
     repaint();
     QTimer * timer= new QTimer(this);
-    timer->start(33);
+    timer->start(11);//正常速度为33
     connect(timer,&QTimer::timeout,this,&Widget::timeOut);
     icons[0]=ui->pushButton_1;
     icons[1]=ui->pushButton_2;
@@ -28,6 +28,7 @@ Widget::Widget(QWidget *parent)
     icons[9]=ui->pushButton_10;
     icons[10]=ui->pushButton_11;
     icons[11]=ui->pushButton_12;
+    ui->widget->hide();
     for(int i=0;i<12;i++){
         connect(icons[i],&QPushButton::clicked,this,&Widget::buttonClicked);
     }
@@ -40,6 +41,7 @@ Widget::~Widget()
 }
 void Widget::checkButtonPlace(int x, int y)
 {
+    if(map.map[x][y]>2&&map.map[x][y]<7)return;
     if(x==0){
         if(y==0){//[左上角
             initButton(x,y,1);
@@ -69,6 +71,7 @@ void Widget::checkButtonPlace(int x, int y)
 
 void Widget::initButton(int x, int y, int type)
 {
+    ui->widget->hide();
     clickedPlace=QPoint(x,y);//标记选择的点
     int deviationX=0;//偏移量
     int deviationY=0;
@@ -121,6 +124,7 @@ void Widget::initButton(int x, int y, int type)
             for(int i=0;i<7;i++){
                 if(history.tower[i]==1){
                     icons[i]->show();
+                    icons[i]->raise();
                 }
             }
         break;
@@ -140,6 +144,7 @@ void Widget::initButton(int x, int y, int type)
                 break;
             }
             icons[9]->show();
+            icons[9]->raise();
         break;
         case 2:
             switch (type) {
@@ -157,8 +162,16 @@ void Widget::initButton(int x, int y, int type)
                 break;
             }
             icons[8]->show();
+            icons[8]->raise();
         break;
         case 7:
+            ui->widget->show();
+            Tower *temp=tower->next;
+            while((temp->place.x()!=x||temp->place.y()!=y)&&temp->next!=NULL){
+                temp=temp->next;
+            }
+            ui->widget->resize(temp->range*2*blockWidth,temp->range*2*blockWidth);
+            ui->widget->move((x-temp->range)*blockWidth+blockWidth/2,(y-temp->range)*blockWidth+blockWidth/2);
             switch (type) {
                 case 1:case 5:case 7:
                 icons[11]->move((x+0.75*deviationX+0.15)*blockWidth,(y+0.15)*blockWidth);
@@ -183,23 +196,18 @@ void Widget::initButton(int x, int y, int type)
             }
             icons[10]->show();
             icons[11]->show();
+            icons[10]->raise();
+            icons[11]->raise();
             break;
-        default:
         return;
     }
     icons[7]->show();
+    icons[7]->raise();
 }
 
 void Widget::win()
 {
 
-}
-void Widget::inHome(int no)
-{
-    delete enemy[no/100][no%100];
-    enemy[no/100].remove(no%100);
-    enemyNum[no/100]--;
-    heart--;
 }
 void Widget::timeOut()
 {
@@ -281,6 +289,7 @@ void Widget::buttonClicked()
     }else if(sender()==icons[2]){
     }else if(sender()==icons[3]){
     }else if(sender()==icons[4]){
+        mola-=20;
         Tower *temp=tower;
         while(temp->next!=NULL){
             temp=temp->next;

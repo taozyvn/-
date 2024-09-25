@@ -40,7 +40,10 @@ void Tower::Action(QVector<int>& enemyNum,QVector<QVector<Enemy *>>& enemy,int b
             for(int i=0;i<enemyNum.length();i++){//遍历寻找符合攻击条件的敌人
                 for(int j=0;j<enemyNum[i];j++){
                     if(enemy[i][j]->bload<=0)continue;
-                    if(std::sqrt((enemy[i][j]->place[0]-place.x())*(enemy[i][j]->place[0]-place.x())+(enemy[i][j]->place[1]-place.y())*(enemy[i][j]->place[1]-place.y()))/blockWidth<=range){
+                    if((double)((enemy[i][j]->place[0]-place.x()*20-10)*
+                            (enemy[i][j]->place[0]-place.x()*20-10)+
+                            (enemy[i][j]->place[1]-place.y()*20-10)*
+                            (enemy[i][j]->place[1]-place.y()*20-10))/400<=range*range){//根据勾股定理算出距离
                         this->enemy[0]=i;
                         this->enemy[1]=j;
                         angle =getAngle(place,enemy[i][j]->place[0],enemy[i][j]->place[1]);
