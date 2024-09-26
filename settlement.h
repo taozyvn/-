@@ -12,7 +12,7 @@ class Settlement : public QDialog
 {
     Q_OBJECT
 public:
-    int mode;//模式，0为关卡开始，1为游戏失败，2-5为3星到0星
+    int mode;//模式，0为关卡开始，1为游戏失败，2胜利
     bool stars[3];//星星数
     QWidget * box[3];//框
 public:

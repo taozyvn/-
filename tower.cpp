@@ -30,13 +30,17 @@ Tower::Tower(int type, QPoint place,int startTime)
     }
 }
 
-void Tower::Action(QVector<int>& enemyNum,QVector<QVector<Enemy *>>& enemy,int blockWidth)
+void Tower::Action(QVector<int>& enemyNum,QVector<QVector<Enemy *>>& enemy)
 {
     switch(type){
         case 1:
  
         case 2:
-            enemy[this->enemy[0]][this->enemy[1]]->bload-=damage;
+            if(this->enemy[0]!=-1){
+                enemy[this->enemy[0]][this->enemy[1]]->bload-=damage;
+            }else{
+                return;
+            }
             for(int i=0;i<enemyNum.length();i++){//遍历寻找符合攻击条件的敌人
                 for(int j=0;j<enemyNum[i];j++){
                     if(enemy[i][j]->bload<=0)continue;

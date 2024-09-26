@@ -12,7 +12,10 @@ public:
     QVector<int> enemyTime;//每波的两次出怪间隔
     int waveTime;//两个波次间的间隔
     int waveNum;//波次数量
+    int level;
+    QString objective[3];
     LevelInfo(int level);
+    void getLevelInfo(int level);
 };
 
 #endif // LEVELINFO_H

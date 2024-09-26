@@ -14,7 +14,7 @@ Widget::Widget(QWidget *parent)
     ui->setupUi(this);
     repaint();
     QTimer * timer= new QTimer(this);
-    timer->start(11);//正常速度为33
+    timer->start(33);//正常速度为33
     connect(timer,&QTimer::timeout,this,&Widget::timeOut);
     icons[0]=ui->pushButton_1;
     icons[1]=ui->pushButton_2;
@@ -207,11 +207,55 @@ void Widget::initButton(int x, int y, int type)
 
 void Widget::win()
 {
+    Settlement Dialog(blockWidth,2,stars,level->objective,this);
+    Dialog.exec();
+    if(history.level==level->level){
+        history.level++;
+    }
+    mode=1;
+    map.getLevelMap(-1);
+    clearInfo();
 
+}
+
+void Widget::died()
+{
+    Settlement Dialog(blockWidth,1,stars,level->objective,this);
+    Dialog.exec();
+    mode=1;
+    map.getLevelMap(-1);
+    clearInfo();
+}
+
+void Widget::clearInfo()
+{
+    if(tower->next!=NULL){
+        Tower * temp=tower->next;
+        Tower * temp2=temp->next;
+        while(true){
+            delete temp;
+            temp=temp2;
+            if(temp->next==NULL){
+                delete temp;
+                break;
+            }
+            temp2=temp->next;
+        }
+    }
+    waveNum=0;
+    tower->next=NULL;
+    stars[0]=true;
+    stars[1]=true;
+    stars[2]=true;
+    mola=100;
+    heart=5;
+    for(int i=0;i<12;i++){
+        icons[i]->hide();
+    }
+    ui->widget->hide();
 }
 void Widget::timeOut()
 {
-    timeNum++;
     //关卡中的事件
     if(mode==3){
         if(timeNum%level->enemyTime[waveNum]==0){//出怪
@@ -221,6 +265,8 @@ void Widget::timeOut()
                                            waveNum*100+enemyNum[waveNum]);//创建新的敌人
                 connect(newEnemy,&Enemy::inHome,[=](){
                     heart--;
+                    stars[0]=false;
+                    if(heart==0)died();
                 });
                 enemy[waveNum][enemyNum[waveNum]]=newEnemy;
                 enemyNum[waveNum]++;
@@ -265,21 +311,25 @@ void Widget::timeOut()
                 if(temp->type==5){
                     temp->Action(mola);
                 }else{
-                    temp->Action(enemyNum,enemy,blockWidth);
+                    temp->Action(enemyNum,enemy);
                 }
             }else{
-                temp->angle =temp->getAngle(temp->place,enemy[temp->enemy[0]][temp->enemy[1]]->place[0],enemy[temp->enemy[0]][temp->enemy[1]]->place[1]);
+                if(temp->enemy[0]!=-1){
+                    temp->angle =temp->getAngle(temp->place,enemy[temp->enemy[0]][temp->enemy[1]]->place[0],enemy[temp->enemy[0]][temp->enemy[1]]->place[1]);
+                }
             }
             temp=temp->next;
         }
     }
     repaint();
+    timeNum++;
 }
 
 void Widget::buttonClicked()
 {
     if(sender()==icons[0]){
     }else if(sender()==icons[1]){
+        mola-=20;
         Tower *temp=tower;
         while(temp->next!=NULL){
             temp=temp->next;
@@ -289,21 +339,24 @@ void Widget::buttonClicked()
     }else if(sender()==icons[2]){
     }else if(sender()==icons[3]){
     }else if(sender()==icons[4]){
-        mola-=20;
+        mola-=30;
         Tower *temp=tower;
         while(temp->next!=NULL){
             temp=temp->next;
         }
         temp->next=new Tower(5,clickedPlace,timeNum);
         map.map[clickedPlace.x()][clickedPlace.y()]=7;
+        if(level->level==1)stars[2]=false;
     }else if(sender()==icons[5]){
     }else if(sender()==icons[6]){
     }else if(sender()==icons[8]){
         mola-=60;
         map.map[clickedPlace.x()][clickedPlace.y()]=0;
+        if(level->level==1)stars[1]=false;
     }else if(sender()==icons[9]){
         mola-=30;
         map.map[clickedPlace.x()][clickedPlace.y()]=0;
+        if(level->level==1)stars[1]=false;
     }else if(sender()==icons[10]){
     }else if(sender()==icons[11]){
     }
@@ -315,7 +368,7 @@ void Widget::mousePressEvent(QMouseEvent *event)
 {
     QPoint place = event->globalPos();//获得点击的位置
     place = this->mapFromGlobal(place);
-    int x=place.x()/blockWidth,y=place.y()/blockWidth;//用坐标除以棋子宽度，得到棋子行列号
+    int x=place.x()/blockWidth,y=place.y()/blockWidth;//用坐标除以格子宽度，得到格子行列号
     if(isMaximized()){
         x=(place.x()+blockWidth/2)/blockWidth-1;
         y=place.y()/blockWidth;
@@ -330,15 +383,21 @@ void Widget::mousePressEvent(QMouseEvent *event)
     case 1://关卡选择界面
         if(x-2>=0&&x-2<11&&y-3>=0){
             if((x-2)%2==0&&(y-3)%2==0&&history.level>=(x-2)/2+1+((y-3)/2)*5){
-                map.getLevelMap((x-2)/2+1+((y-3)/2)*5);
-                mode=3;
                 level=new LevelInfo((x-2)/2+1+((y-3)/2)*5);
+                Settlement Dialog(blockWidth,0,stars,level->objective,this);
+                Dialog.exec();
+                map.getLevelMap((x-2)/2+1+((y-3)/2)*5);
+                for(int i=0;i<3;i++)stars[i]=true;
+                timeNum=0;
+                enemy.clear();
+                enemyNum.clear();
                 enemy.resize(level->waveNum);//给波次分配空间
                 enemyNum.resize(level->waveNum);//给敌人数量分配空间
                 for(int i=0;i<level->waveNum;i++){
                     enemy[i].resize(level->enemy[i]);//给敌人分配空间
                     enemyNum[i]=0;//每波的当前敌人数都是0
                 }
+                mode=3;
             }
         }
         break;
@@ -561,9 +620,12 @@ void Widget::paintEvent(QPaintEvent *)
             //绘画子弹
             switch (temp->type) {
                 case 2:
-                if(enemy[temp->enemy[0]][temp->enemy[1]]->bload<=0){
-                    break;
-                }
+                    if(temp->enemy[0]==-1){
+                        break;
+                    }
+                    if(enemy[temp->enemy[0]][temp->enemy[1]]->bload<=0){
+                        break;
+                    }
                 QPoint bulletPlace=getBullet(QPoint(temp->place.x()*20+10,temp->place.y()*20+10),
                                              QPoint(enemy[temp->enemy[0]][temp->enemy[1]]->place[0],
                                                     enemy[temp->enemy[0]][temp->enemy[1]]->place[1]),

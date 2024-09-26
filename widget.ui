@@ -223,8 +223,8 @@ background:none;</string>
   <widget class="QWidget" name="widget" native="true">
    <property name="geometry">
     <rect>
-     <x>240</x>
-     <y>190</y>
+     <x>10</x>
+     <y>240</y>
      <width>281</width>
      <height>281</height>
     </rect>

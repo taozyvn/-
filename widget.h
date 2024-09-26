@@ -23,6 +23,7 @@ public:
     int heart=5;//剩余生命值
     int waveNum=0;//当前波次
     int mode=0;//模式，0为开始界面，1为关卡选择，2为科技树，3为正式关卡
+    bool stars[3]={true,true,true};//星星数
     QPoint clickedPlace;//被点击的位置
     QPushButton * icons[12];//12种按钮
     History history;//历史记录类，保存关卡进度以及科技树进度；
@@ -36,10 +37,11 @@ public:
     ~Widget();
     void checkButtonPlace(int x,int y);
     void initButton(int x,int y,int type);//0为中间，1为左上，2为上，3为左，4为右，5为左下，6为下，7为右下
-    void win();
+    void win();//游戏胜利
+    void died();//游戏失败
+    void clearInfo();//擦除关卡内信息
     QPoint getBullet(const QPoint &p1, const QPoint &p2, double percentage);
 public slots:
-    void inHome(int no);
     void timeOut();
     void buttonClicked();
 protected:
