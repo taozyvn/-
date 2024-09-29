@@ -17,7 +17,7 @@ class Widget : public QWidget
     Q_OBJECT
 public:
     int timeNum=0;//计时器的时间
-    int endTime=0;
+    int endTime=0;//出怪结束的时间方便出下一波怪
     int blockWidth=64;//图块边长
     int mola=100;//金币数
     int heart=5;//剩余生命值
