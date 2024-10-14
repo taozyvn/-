@@ -13,6 +13,8 @@ Settlement::Settlement(int blockWidth,int mode,bool stars[3],QString objective[3
         this->setStyleSheet("border-image: url(:/map/stars.png);");
     }else if(mode==2){
         this->setStyleSheet("border-image: url(:/map/win-"+QString::number(4-((int)stars[0]+(int)stars[1]+(int)stars[2]))+".png);");
+    }else{
+        this->setStyleSheet("border-image: url(:/map/died.png);");
     }
     for(int i=0;i<3;i++){
         objectiveLable[i]= new QLabel(this);

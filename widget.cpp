@@ -14,7 +14,7 @@ Widget::Widget(QWidget *parent)
     ui->setupUi(this);
     repaint();
     QTimer * timer= new QTimer(this);
-    timer->start(6);//正常速度为33
+    timer->start(3);//正常速度为33
     connect(timer,&QTimer::timeout,this,&Widget::timeOut);
     icons[0]=ui->pushButton_1;
     icons[1]=ui->pushButton_2;
@@ -71,6 +71,7 @@ void Widget::checkButtonPlace(int x, int y)
 
 void Widget::initButton(int x, int y, int type)
 {
+    qDebug()<<"in initButton";
     ui->widget->hide();
     clickedPlace=QPoint(x,y);//标记选择的点
     int deviationX=0;//偏移量
@@ -203,10 +204,12 @@ void Widget::initButton(int x, int y, int type)
     }
     icons[7]->show();
     icons[7]->raise();
+    qDebug()<<"out initButton";
 }
 
 void Widget::win()
 {
+    qDebug()<<"in win";
     Settlement Dialog(blockWidth,2,stars,level->objective,this);
     Dialog.exec();
     if(history.level==level->level){
@@ -215,16 +218,18 @@ void Widget::win()
     mode=1;
     map.getLevelMap(-1);
     clearInfo();
-
+    qDebug()<<"out win";
 }
 
 void Widget::died()
 {
+    qDebug()<<"in died";
     Settlement Dialog(blockWidth,1,stars,level->objective,this);
     Dialog.exec();
     mode=1;
     map.getLevelMap(-1);
     clearInfo();
+    qDebug()<<"out died";
 }
 
 void Widget::clearInfo()
@@ -253,7 +258,7 @@ void Widget::clearInfo()
     stars[0]=true;
     stars[1]=true;
     stars[2]=true;
-    mola=100;
+    mola=30;
     heart=5;
     for(int i=0;i<12;i++){
         icons[i]->hide();
@@ -266,6 +271,7 @@ void Widget::timeOut()
     qDebug()<<"in timeOut";
     //关卡中的事件
     if(mode==3){
+        qDebug()<<level->enemyTime[waveNum];
         if(timeNum%level->enemyTime[waveNum]==0){//出怪
             if(level->enemy[waveNum]>enemyNum[waveNum]){//怪物数量没有达标
                 Enemy * newEnemy=new Enemy(this,map.startBlock,
@@ -279,7 +285,7 @@ void Widget::timeOut()
                 });
                 connect(newEnemy,&Enemy::died,[=](int type){
                     switch (type) {
-                        case 1:mola++;break;
+                        case 1:mola+=(1+(timeNum/2)%2);break;
                         case 2:mola+=2;break;
                     }
                 });
@@ -316,7 +322,7 @@ void Widget::timeOut()
         }
         for(int i=0;i<level->waveNum;i++){//敌人移动
             for(int j=0;j<enemyNum[i];j++){
-                if(timeNum%enemy[i][j]->spead==0){
+                if(enemy[i][j]->diedTime>=0&&(timeNum+enemy[i][j]->no)%enemy[i][j]->spead==0){
                     enemy[i][j]->run(map);
                     enemy[i][j]->move(enemy[i][j]->place[0]*blockWidth/20-blockWidth/6,enemy[i][j]->place[1]*blockWidth/20-blockWidth/6);
                     enemy[i][j]->repaint();
@@ -351,39 +357,60 @@ void Widget::buttonClicked()
     if(sender()==icons[0]){
     }else if(sender()==icons[1]){
         mola-=20;
-        Tower *temp=tower;
-        while(temp->next!=NULL){
-            temp=temp->next;
+        if(mola<0){
+            mola+=20;
+            return;
+        }else{
+            Tower *temp=tower;
+            while(temp->next!=NULL){
+                temp=temp->next;
+            }
+            temp->next=new Tower(2,clickedPlace,timeNum);
+            map.map[clickedPlace.x()][clickedPlace.y()]=7;
         }
-        temp->next=new Tower(2,clickedPlace,timeNum);
-        map.map[clickedPlace.x()][clickedPlace.y()]=7;
     }else if(sender()==icons[2]){
     }else if(sender()==icons[3]){
     }else if(sender()==icons[4]){
         mola-=30;
-        Tower *temp=tower;
-        while(temp->next!=NULL){
-            temp=temp->next;
+        if(mola<0){
+            mola+=30;
+            return;
+        }else{
+            Tower *temp=tower;
+            while(temp->next!=NULL){
+                temp=temp->next;
+            }
+            temp->next=new Tower(5,clickedPlace,timeNum);
+            map.map[clickedPlace.x()][clickedPlace.y()]=7;
+            if(level->level==1)stars[2]=false;
         }
-        temp->next=new Tower(5,clickedPlace,timeNum);
-        map.map[clickedPlace.x()][clickedPlace.y()]=7;
-        if(level->level==1)stars[2]=false;
     }else if(sender()==icons[5]){
     }else if(sender()==icons[6]){
     }else if(sender()==icons[8]){
         mola-=60;
-        map.map[clickedPlace.x()][clickedPlace.y()]=0;
-        if(level->level==1)stars[1]=false;
+        if(mola<0){
+            mola+=60;
+            return;
+        }else{
+            map.map[clickedPlace.x()][clickedPlace.y()]=0;
+            if(level->level==1)stars[1]=false;
+        }
     }else if(sender()==icons[9]){
         mola-=30;
-        map.map[clickedPlace.x()][clickedPlace.y()]=0;
-        if(level->level==1)stars[1]=false;
+        if(mola<0){
+            mola+=30;
+            return;
+        }else{
+            map.map[clickedPlace.x()][clickedPlace.y()]=0;
+            if(level->level==1)stars[1]=false;
+        }
     }else if(sender()==icons[10]){
     }else if(sender()==icons[11]){
     }
     for(int i=0;i<12;i++){
         icons[i]->hide();
     }
+    ui->widget->hide();
     qDebug()<<"out buttonClicked";
 }
 void Widget::mousePressEvent(QMouseEvent *event)
@@ -432,6 +459,7 @@ void Widget::mousePressEvent(QMouseEvent *event)
 }
 void Widget::paintEvent(QPaintEvent *)
 {
+    qDebug()<<"in paintEvent";
     QPainter painter(this);
     QPixmap * pixmap;
     QRect rect;
@@ -512,10 +540,10 @@ void Widget::paintEvent(QPaintEvent *)
         font.setPointSize(blockWidth/3*2);
         painter.setFont(font);
         painter.setPen(qRgb(0,0,160));
-        rect =QRect(5.2*blockWidth,2.5*blockWidth,blockWidth*5.6,blockWidth);//定义一个方格大小的正方形
+        rect =QRect(5.2*blockWidth,2.35*blockWidth,blockWidth*5.6,blockWidth);//定义一个方格大小的正方形
         painter.drawText(rect,"史莱姆塔防");
         painter.setPen(qRgb(0,96,225));
-        rect =QRect(5.18*blockWidth,2.48*blockWidth,blockWidth*5.6,blockWidth);//定义一个方格大小的正方形
+        rect =QRect(5.18*blockWidth,2.33*blockWidth,blockWidth*5.6,blockWidth);//定义一个方格大小的正方形
         painter.drawText(rect,"史莱姆塔防");
         painter.setPen(qRgb(225,0,40));
         font.setPointSize(blockWidth/5*3);
@@ -555,10 +583,10 @@ void Widget::paintEvent(QPaintEvent *)
         rect =QRect(13*blockWidth,6*blockWidth,blockWidth,blockWidth);
         pixmap=new QPixmap(":level/yvanShi.png");
         painter.drawPixmap(rect,*pixmap);
-        rect=QRect(13.05*blockWidth,blockWidth*3,blockWidth,blockWidth*3);
+        rect=QRect(13.05*blockWidth,blockWidth*2.87,blockWidth,blockWidth*3.2);
         painter.setPen(qRgb(255,128,0));
         painter.drawText(rect,"科技树");
-        rect =QRect(13.03*blockWidth,2.98*blockWidth,blockWidth,blockWidth*3);//定义一个方格大小的正方形
+        rect =QRect(13.03*blockWidth,2.85*blockWidth,blockWidth,blockWidth*3.2);//定义一个方格大小的正方形
         painter.setPen(qRgb(255,0,36));
         painter.drawText(rect,"科技树");
         break;
@@ -631,6 +659,7 @@ void Widget::paintEvent(QPaintEvent *)
         break;
     default:break;
     }
+    qDebug()<<"out paintEvent";
 }
 QPoint Widget::getBullet(const QPoint &p1, const QPoint &p2, double percentage) {
     double dx = (double)p2.x() - p1.x();

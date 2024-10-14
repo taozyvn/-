@@ -19,7 +19,7 @@ public:
     int timeNum=0;//计时器的时间
     int endTime=0;//出怪结束的时间方便出下一波怪
     int blockWidth=64;//图块边长
-    int mola=100;//金币数
+    int mola=30;//金币数
     int heart=5;//剩余生命值
     int waveNum=0;//当前波次
     int mode=0;//模式，0为开始界面，1为关卡选择，2为科技树，3为正式关卡

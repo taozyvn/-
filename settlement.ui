@@ -14,7 +14,7 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">border-image: url(:/map/died.png);</string>
+   <string notr="true">border-image: url(:/map/win-4.png);</string>
   </property>
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">

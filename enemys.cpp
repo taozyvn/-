@@ -1,5 +1,4 @@
 #include "enemys.h"
-
 #include <QPainter>
 Enemy::Enemy(QWidget *parents, QPoint place, int type, int waveNum, int blockWidth):QWidget(parents)
 {
@@ -30,6 +29,7 @@ Enemy::Enemy(QWidget *parents, QPoint place, int type, int waveNum, int blockWid
         spead=1;
         break;
     }
+    bload+=bload*(int)(waveNum/100)/10;//血量随波次增长
     if(type<=7){
         this->resize(blockWidth/3,blockWidth/3);
     }
@@ -38,6 +38,7 @@ Enemy::Enemy(QWidget *parents, QPoint place, int type, int waveNum, int blockWid
 
 void Enemy::paintEvent(QPaintEvent *)
 {
+//    if(diedTime<0)return;
     QPainter painter(this);
     if(diedTime==0){
         painter.drawPixmap(QRect(0,0,this->width(),this->height()),QPixmap(":/enemy/slime-1-"+QString::number(type)+".png"));
