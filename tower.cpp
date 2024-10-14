@@ -66,11 +66,6 @@ void Tower::Action(QVector<int>& enemyNum,QVector<QVector<Enemy *>>& enemy)
     }
 }
 
-void Tower::Action(int &mola)
-{
-    mola+=damage;
-}
-
 int Tower::getAngle(QPoint p1,double p3x,double p3y) {
     // 线段的终点 p2 的计算
     QPoint p2 = QPoint(p1.x() * 2, p1.y());

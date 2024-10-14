@@ -1,9 +1,8 @@
 #include "levelinfo.h"
 
-LevelInfo::LevelInfo(int level)
+LevelInfo::LevelInfo()
 {
-    this->level=level;
-    getLevelInfo(level);
+
 }
 
 void LevelInfo::getLevelInfo(int level)
@@ -14,6 +13,7 @@ void LevelInfo::getLevelInfo(int level)
         objective[1]="不砍伐任何树木";
         objective[2]="不使用岩元素塔";
         waveNum=5;
+        startMola=30;
         enemyType.resize(waveNum);
         enemyTime.resize(waveNum);
         enemy.resize(waveNum);
@@ -31,6 +31,7 @@ void LevelInfo::getLevelInfo(int level)
         objective[1]="砍伐任意的树木";
         objective[2]="放置六座防御塔";
         waveNum=10;
+        startMola=50;
         enemyType.resize(waveNum);
         enemyTime.resize(waveNum);
         enemy.resize(waveNum);

@@ -13,8 +13,9 @@ public:
     int waveTime;//两个波次间的间隔
     int waveNum;//波次数量
     int level;
+    int startMola;
     QString objective[3];
-    LevelInfo(int level);
+    LevelInfo();
     void getLevelInfo(int level);
 };
 

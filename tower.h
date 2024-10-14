@@ -20,7 +20,6 @@ public:
     Tower(){};//用于生成链表头
     Tower(int type,QPoint place,int startTiem);
     void Action(QVector<int> &enemyNum, QVector<QVector<Enemy *> > &enemy);
-    void Action(int &mola);
     int getAngle(QPoint p1, double p3x, double p3y);
 };
 

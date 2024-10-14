@@ -19,16 +19,17 @@ public:
     int timeNum=0;//计时器的时间
     int endTime=0;//出怪结束的时间方便出下一波怪
     int blockWidth=64;//图块边长
-    int mola=30;//金币数
     int heart=5;//剩余生命值
     int waveNum=0;//当前波次
     int mode=0;//模式，0为开始界面，1为关卡选择，2为科技树，3为正式关卡
+    int moreMola=0;//岩元素塔数量
+    double mola=30;//金币数
     bool stars[3]={true,true,true};//星星数
     QPoint clickedPlace;//被点击的位置
     QPushButton * icons[12];//12种按钮
     History history;//历史记录类，保存关卡进度以及科技树进度；
     Map map;//地图类，里面存放了每一关的地图信息
-    LevelInfo * level;//记录敌人信息的类
+    LevelInfo level;//记录敌人信息的类
     QVector<int> enemyNum;//当前存在的敌人数
     QVector<QVector<Enemy*>> enemy;//指向每一个敌人的数组
     Tower * tower;//存放塔的链表

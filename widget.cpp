@@ -210,9 +210,9 @@ void Widget::initButton(int x, int y, int type)
 void Widget::win()
 {
     qDebug()<<"in win";
-    Settlement Dialog(blockWidth,2,stars,level->objective,this);
+    Settlement Dialog(blockWidth,2,stars,level.objective,this);
     Dialog.exec();
-    if(history.level==level->level){
+    if(history.level==level.level){
         history.level++;
     }
     mode=1;
@@ -224,7 +224,7 @@ void Widget::win()
 void Widget::died()
 {
     qDebug()<<"in died";
-    Settlement Dialog(blockWidth,1,stars,level->objective,this);
+    Settlement Dialog(blockWidth,1,stars,level.objective,this);
     Dialog.exec();
     mode=1;
     map.getLevelMap(-1);
@@ -247,18 +247,18 @@ void Widget::clearInfo()
             temp2=temp->next;
         }
     }
-    for(int i=0;i<level->waveNum;i++){
+    for(int i=0;i<level.waveNum;i++){
         for(int j=0;j<enemyNum[i];j++){
             delete enemy[i][j];
         }
     }
+    moreMola=0;
     waveNum=0;
     endTime=0;
     tower->next=NULL;
     stars[0]=true;
     stars[1]=true;
     stars[2]=true;
-    mola=30;
     heart=5;
     for(int i=0;i<12;i++){
         icons[i]->hide();
@@ -271,11 +271,11 @@ void Widget::timeOut()
     qDebug()<<"in timeOut";
     //关卡中的事件
     if(mode==3){
-        qDebug()<<level->enemyTime[waveNum];
-        if(timeNum%level->enemyTime[waveNum]==0){//出怪
-            if(level->enemy[waveNum]>enemyNum[waveNum]){//怪物数量没有达标
+        qDebug()<<level.enemyTime[waveNum];
+        if(timeNum%level.enemyTime[waveNum]==0){//出怪
+            if(level.enemy[waveNum]>enemyNum[waveNum]){//怪物数量没有达标
                 Enemy * newEnemy=new Enemy(this,map.startBlock,
-                                           level->enemyType[waveNum],
+                                           level.enemyType[waveNum],
                                            waveNum*100+enemyNum[waveNum]
                                            ,blockWidth);//创建新的敌人
                 connect(newEnemy,&Enemy::inHome,[=](){
@@ -285,9 +285,10 @@ void Widget::timeOut()
                 });
                 connect(newEnemy,&Enemy::died,[=](int type){
                     switch (type) {
-                        case 1:mola+=(1+(timeNum/2)%2);break;
-                        case 2:mola+=2;break;
-                    }
+                        case 1:mola+=(1.0+(timeNum/2)%2)*(1.0+(double)moreMola/2);;break;
+                        case 2:mola+=2.0*(1.0+(double)moreMola/2);;break;
+                        case 5:mola+=1.0*(1.0+(double)moreMola/2);break;
+;                    }
                 });
                 newEnemy->show();
                 enemy[waveNum][enemyNum[waveNum]]=newEnemy;
@@ -299,7 +300,7 @@ void Widget::timeOut()
             }
         }
         if(endTime!=0){//召唤下一波敌人
-            if(timeNum-endTime==level->waveTime*33&&waveNum<level->waveNum-1){
+            if(timeNum-endTime==level.waveTime*33&&waveNum<level.waveNum-1){
                 waveNum++;
                 endTime=0;
             }else{
@@ -311,7 +312,7 @@ void Widget::timeOut()
                     }
                 }
                 if(isFinish){
-                    if(waveNum<level->waveNum-1){
+                    if(waveNum<level.waveNum-1){
                         waveNum++;
                         endTime=0;
                     }else{
@@ -320,7 +321,7 @@ void Widget::timeOut()
                 }
             }
         }
-        for(int i=0;i<level->waveNum;i++){//敌人移动
+        for(int i=0;i<level.waveNum;i++){//敌人移动
             for(int j=0;j<enemyNum[i];j++){
                 if(enemy[i][j]->diedTime>=0&&(timeNum+enemy[i][j]->no)%enemy[i][j]->spead==0){
                     enemy[i][j]->run(map);
@@ -331,15 +332,13 @@ void Widget::timeOut()
         }
         Tower * temp = tower->next;//防御塔攻击
         while(temp!=NULL){
-            if((timeNum-temp->startTime)%temp->fireSpeed==0){
-                if(temp->type==5){
-                    temp->Action(mola);
-                }else{
+            if(temp->type!=5){
+                if((timeNum-temp->startTime)%temp->fireSpeed==0){
                     temp->Action(enemyNum,enemy);
-                }
-            }else{
-                if(temp->enemy[0]!=-1){
-                    temp->angle =temp->getAngle(temp->place,enemy[temp->enemy[0]][temp->enemy[1]]->place[0],enemy[temp->enemy[0]][temp->enemy[1]]->place[1]);
+                }else{
+                    if(temp->enemy[0]!=-1){
+                        temp->angle =temp->getAngle(temp->place,enemy[temp->enemy[0]][temp->enemy[1]]->place[0],enemy[temp->enemy[0]][temp->enemy[1]]->place[1]);
+                    }
                 }
             }
             temp=temp->next;
@@ -376,13 +375,14 @@ void Widget::buttonClicked()
             mola+=30;
             return;
         }else{
+            moreMola++;
             Tower *temp=tower;
             while(temp->next!=NULL){
                 temp=temp->next;
             }
             temp->next=new Tower(5,clickedPlace,timeNum);
             map.map[clickedPlace.x()][clickedPlace.y()]=7;
-            if(level->level==1)stars[2]=false;
+            if(level.level==1)stars[2]=false;
         }
     }else if(sender()==icons[5]){
     }else if(sender()==icons[6]){
@@ -393,7 +393,7 @@ void Widget::buttonClicked()
             return;
         }else{
             map.map[clickedPlace.x()][clickedPlace.y()]=0;
-            if(level->level==1)stars[1]=false;
+            if(level.level==1)stars[1]=false;
         }
     }else if(sender()==icons[9]){
         mola-=30;
@@ -402,7 +402,7 @@ void Widget::buttonClicked()
             return;
         }else{
             map.map[clickedPlace.x()][clickedPlace.y()]=0;
-            if(level->level==1)stars[1]=false;
+            if(level.level==1)stars[1]=false;
         }
     }else if(sender()==icons[10]){
     }else if(sender()==icons[11]){
@@ -433,20 +433,21 @@ void Widget::mousePressEvent(QMouseEvent *event)
     case 1://关卡选择界面
         if(x-2>=0&&x-2<11&&y-3>=0){
             if((x-2)%2==0&&(y-3)%2==0&&history.level>=(x-2)/2+1+((y-3)/2)*5){
-                level=new LevelInfo((x-2)/2+1+((y-3)/2)*5);
-                Settlement Dialog(blockWidth,0,stars,level->objective,this);
+                level.getLevelInfo((x-2)/2+1+((y-3)/2)*5);
+                Settlement Dialog(blockWidth,0,stars,level.objective,this);
                 Dialog.exec();
                 map.getLevelMap((x-2)/2+1+((y-3)/2)*5);
                 for(int i=0;i<3;i++)stars[i]=true;
                 timeNum=0;
                 enemy.clear();
                 enemyNum.clear();
-                enemy.resize(level->waveNum);//给波次分配空间
-                enemyNum.resize(level->waveNum);//给敌人数量分配空间
-                for(int i=0;i<level->waveNum;i++){
-                    enemy[i].resize(level->enemy[i]);//给敌人分配空间
+                enemy.resize(level.waveNum);//给波次分配空间
+                enemyNum.resize(level.waveNum);//给敌人数量分配空间
+                for(int i=0;i<level.waveNum;i++){
+                    enemy[i].resize(level.enemy[i]);//给敌人分配空间
                     enemyNum[i]=0;//每波的当前敌人数都是0
                 }
+                mola=level.startMola;
                 mode=3;
             }
         }
@@ -603,7 +604,7 @@ void Widget::paintEvent(QPaintEvent *)
             rect = QRect(15.25*blockWidth,0.15*blockWidth,blockWidth,blockWidth/2);
         }
         painter.setPen(qRgb(255,128,10));
-        painter.drawText(rect,QString::number(mola));
+        painter.drawText(rect,QString::number((int)mola));
         if(heart>9){
             rect = QRect(15.3*blockWidth,0.6*blockWidth,blockWidth,blockWidth/2);
         }else{
@@ -643,8 +644,8 @@ void Widget::paintEvent(QPaintEvent *)
             //炮管
             painter.save();//存储当前状态
             if(temp->type==1||temp->type==5||temp->type==6){
-                rect=QRect((temp->place.x()+0.1)*blockWidth,(temp->place.y()+0.1)*blockWidth,
-                           blockWidth*0.8,blockWidth*0.8);
+                rect=QRect((-0.3)*blockWidth,(-0.3)*blockWidth,
+                           blockWidth*0.6,blockWidth*0.6);
             }else{
                 rect=QRect((-0.3)*blockWidth,(-0.3)*blockWidth,
                            blockWidth*0.9,blockWidth*0.6);
