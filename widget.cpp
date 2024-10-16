@@ -28,7 +28,9 @@ Widget::Widget(QWidget *parent)
     icons[9]=ui->pushButton_10;
     icons[10]=ui->pushButton_11;
     icons[11]=ui->pushButton_12;
+    towerLevel=ui->label;
     ui->widget->hide();
+    ui->label->hide();
     for(int i=0;i<12;i++){
         connect(icons[i],&QPushButton::clicked,this,&Widget::buttonClicked);
     }
@@ -73,10 +75,11 @@ void Widget::initButton(int x, int y, int type)
 {
     qDebug()<<"in initButton";
     ui->widget->hide();
+    ui->label->hide();
+    for(int i=0;i<12;i++)icons[i]->hide();
     clickedPlace=QPoint(x,y);//标记选择的点
     int deviationX=0;//偏移量
     int deviationY=0;
-    for(int i=0;i<12;i++)icons[i]->hide();
     switch (type) {//0为中间，1为左上，2为上，3为左，4为右，5为左下，6为下，7为右下
         case 1:
             deviationX=1;
@@ -167,12 +170,15 @@ void Widget::initButton(int x, int y, int type)
         break;
         case 7:
             ui->widget->show();
+            ui->label->show();
             Tower *temp=tower->next;
             while((temp->place.x()!=x||temp->place.y()!=y)&&temp->next!=NULL){
                 temp=temp->next;
             }
             ui->widget->resize(temp->range*2*blockWidth,temp->range*2*blockWidth);
+            ui->label->setNum(temp->level);
             ui->widget->move((x-temp->range)*blockWidth+blockWidth/2,(y-temp->range)*blockWidth+blockWidth/2);
+            ui->label->move(x*blockWidth+blockWidth/2-blockWidth/8,y*blockWidth+blockWidth/2-blockWidth/8);
             switch (type) {
                 case 1:case 5:case 7:
                 icons[11]->move((x+0.75*deviationX+0.15)*blockWidth,(y+0.15)*blockWidth);
@@ -195,6 +201,8 @@ void Widget::initButton(int x, int y, int type)
                 icons[11]->move((x-0.75+0.15)*blockWidth,(y+0.15)*blockWidth);
                 break;
             }
+            icons[10]->setText("升级\n"+QString::number(temp->price*1.5));
+            icons[11]->setText("出售\n"+QString::number(temp->price*0.6));
             icons[10]->show();
             icons[11]->show();
             icons[10]->raise();
@@ -278,6 +286,7 @@ void Widget::clearInfo()
         icons[i]->hide();
     }
     ui->widget->hide();
+    ui->label->hide();
     qDebug()<<"out clearnInfo";
 }
 void Widget::timeOut()
@@ -421,12 +430,45 @@ void Widget::buttonClicked()
             if(level.level==2)stars[1]=true;
         }
     }else if(sender()==icons[10]){
+        Tower *temp=tower;
+        while(true){
+            if(temp->next->place==clickedPlace){
+                temp=temp->next;
+                break;
+            }
+            temp=temp->next;
+        }
+        mola-=temp->price*1.5;
+        if(mola<0){
+            mola+=temp->price*1.5;
+            return;
+        }else{
+            temp->levelUp();
+        }
     }else if(sender()==icons[11]){
+        Tower *temp=tower;
+        while(true){
+            if(temp->next->place==clickedPlace){
+                break;
+            }
+            temp=temp->next;
+        }
+        if(temp->next->next==NULL){
+            delete temp->next;
+            temp->next=NULL;
+        }else{
+            Tower * temp2=temp->next->next;
+            delete temp->next;
+            temp->next=temp2;
+        }
+        mola+=temp->price*0.6;
+        map.map[clickedPlace.x()][clickedPlace.y()]=0;
     }
     for(int i=0;i<12;i++){
         icons[i]->hide();
     }
     ui->widget->hide();
+    ui->label->hide();
     qDebug()<<"out buttonClicked";
 }
 void Widget::mousePressEvent(QMouseEvent *event)
@@ -682,6 +724,7 @@ void Widget::paintEvent(QPaintEvent *)
     }
     qDebug()<<"out paintEvent";
 }
+
 QPoint Widget::getBullet(const QPoint &p1, const QPoint &p2, double percentage) {
     double dx = (double)p2.x() - p1.x();
     double dy = (double)p2.y() - p1.y();

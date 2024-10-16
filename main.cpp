@@ -14,5 +14,7 @@ int main(int argc, char *argv[])
         w.icons[i]->resize(w.blockWidth*0.7,w.blockWidth*0.7);
         w.icons[i]->hide();
     }
+    w.towerLevel->setStyleSheet("font: "+QString::number(w.blockWidth/4)+"pt \"Cascadia Code\";background-color:none;");
+    w.towerLevel->resize(w.blockWidth/4,w.blockWidth/4);
     return a.exec();
 }

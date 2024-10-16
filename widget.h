@@ -27,6 +27,7 @@ public:
     bool stars[3]={true,true,true};//星星数
     QPoint clickedPlace;//被点击的位置
     QPushButton * icons[12];//12种按钮
+    QLabel * towerLevel;
     History history;//历史记录类，保存关卡进度以及科技树进度；
     Map map;//地图类，里面存放了每一关的地图信息
     LevelInfo level;//记录敌人信息的类

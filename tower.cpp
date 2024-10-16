@@ -11,6 +11,7 @@ Tower::Tower(int type, QPoint place,int startTime)
         case 1:
             break;
         case 2:
+            price=20;
             fireSpeed=10;
             damage=20;
             range=3;
@@ -18,8 +19,10 @@ Tower::Tower(int type, QPoint place,int startTime)
         case 3:
             break;
         case 4:
-            fireSpeed=330;
-            damage=10;
+            price=30;
+            fireSpeed=1000;
+            damage=0;
+            range=0;
             break;
         case 5:
             break;
@@ -84,5 +87,17 @@ int Tower::getAngle(QPoint p1,double p3x,double p3y) {
     // 确保角度在 0-360 度范围内
     angleDifference = fmod(angleDifference + 360, 360);
     return angleDifference;
+}
+
+void Tower::levelUp()
+{
+    level++;
+    switch (type) {
+        case 2:
+            damage*=2;
+            fireSpeed-=1;
+            price*=2.5;
+            break;
+    }
 }
 
