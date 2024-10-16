@@ -3,6 +3,6 @@
 History::History()
 {
     for(int i=0;i<7;i++){
-        tower[i]=1;
+        tower[i]=2;
     }
 }

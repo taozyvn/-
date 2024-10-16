@@ -123,7 +123,7 @@ void Widget::initButton(int x, int y, int type)
                 icons[6]->move((x+deviationX*0.6+0.15)*blockWidth,(y+deviationY*0.6+0.15)*blockWidth);
             }
             for(int i=0;i<7;i++){
-                if(history.tower[i]==1){
+                if(history.tower[i]>0){
                     icons[i]->show();
                     icons[i]->raise();
                 }
@@ -210,6 +210,20 @@ void Widget::initButton(int x, int y, int type)
 void Widget::win()
 {
     qDebug()<<"in win";
+    if(level.level==2){
+        Tower * temp=tower;
+        int towerNum=0;
+        while(true){
+            if(temp->next==NULL){
+                break;
+            }else{
+               towerNum++;
+               temp=temp->next;
+            }
+        }
+        stars[2]=towerNum>=6;
+    }
+    if(level.level==3)stars[1]=mola>=100;
     Settlement Dialog(blockWidth,2,stars,level.objective,this);
     Dialog.exec();
     if(history.level==level.level){
@@ -394,6 +408,7 @@ void Widget::buttonClicked()
         }else{
             map.map[clickedPlace.x()][clickedPlace.y()]=0;
             if(level.level==1)stars[1]=false;
+            if(level.level==2)stars[1]=true;
         }
     }else if(sender()==icons[9]){
         mola-=30;
@@ -403,6 +418,7 @@ void Widget::buttonClicked()
         }else{
             map.map[clickedPlace.x()][clickedPlace.y()]=0;
             if(level.level==1)stars[1]=false;
+            if(level.level==2)stars[1]=true;
         }
     }else if(sender()==icons[10]){
     }else if(sender()==icons[11]){
@@ -448,6 +464,7 @@ void Widget::mousePressEvent(QMouseEvent *event)
                     enemyNum[i]=0;//每波的当前敌人数都是0
                 }
                 mola=level.startMola;
+                if(level.level==2)stars[1]=false;
                 mode=3;
             }
         }
@@ -594,24 +611,27 @@ void Widget::paintEvent(QPaintEvent *)
     case 3:
         //绘画右上方的信息框
         font.setFamily("Arial Black");
-        font.setPointSize(blockWidth/8);
+        font.setPointSize(blockWidth/10);
         painter.setFont(font);
         if(mola>999){
-            rect = QRect(15.05*blockWidth,0.15*blockWidth,blockWidth,blockWidth/2);
+            rect = QRect(15.05*blockWidth,0.10*blockWidth,blockWidth,blockWidth/2);
         }else if(mola>99){
-            rect = QRect(15.15*blockWidth,0.15*blockWidth,blockWidth,blockWidth/2);
+            rect = QRect(15.15*blockWidth,0.10*blockWidth,blockWidth,blockWidth/2);
         }else{
-            rect = QRect(15.25*blockWidth,0.15*blockWidth,blockWidth,blockWidth/2);
+            rect = QRect(15.25*blockWidth,0.10*blockWidth,blockWidth,blockWidth/2);
         }
         painter.setPen(qRgb(255,128,10));
         painter.drawText(rect,QString::number((int)mola));
         if(heart>9){
-            rect = QRect(15.3*blockWidth,0.6*blockWidth,blockWidth,blockWidth/2);
+            rect = QRect(15.2*blockWidth,0.35*blockWidth,blockWidth,blockWidth/2);
         }else{
-            rect = QRect(15.4*blockWidth,0.6*blockWidth,blockWidth,blockWidth/2);
+            rect = QRect(15.3*blockWidth,0.38*blockWidth,blockWidth,blockWidth/2);
         }
         painter.setPen(qRgb(255,10,10));
         painter.drawText(rect,QString::number(heart));
+        rect = QRect(15.2*blockWidth,0.66*blockWidth,blockWidth,blockWidth/2);
+        painter.setPen(qRgb(0,255,0));
+        painter.drawText(rect,QString::number(waveNum+1)+"/"+QString::number(level.waveNum));
         //绘画塔
         temp=tower->next;
         while(temp!=NULL){
