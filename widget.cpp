@@ -327,7 +327,7 @@ void Widget::timeOut()
         qDebug()<<level.enemyTime[waveNum];
         if(timeNum%level.enemyTime[waveNum]==0){//出怪
             if(level.enemy[waveNum]>enemyNum[waveNum]){//怪物数量没有达标
-                Enemy * newEnemy=new Enemy(this,map.startBlock,
+                Enemy * newEnemy=new Enemy(map.startBlock,
                                            level.enemyType[waveNum],
                                            waveNum*100+enemyNum[waveNum]
                                            ,blockWidth);//创建新的敌人
@@ -343,7 +343,6 @@ void Widget::timeOut()
                         case 5:mola+=(1.0+(timeNum/2)%2)*(1.0+(double)moreMola/2);break;
                     }
                 });
-                newEnemy->show();
                 enemy[waveNum][enemyNum[waveNum]]=newEnemy;
                 enemyNum[waveNum]++;
             }else{
@@ -378,8 +377,6 @@ void Widget::timeOut()
             for(int j=0;j<enemyNum[i];j++){
                 if(enemy[i][j]->diedTime>=0&&(timeNum+enemy[i][j]->no)%enemy[i][j]->spead==0){
                     enemy[i][j]->run(map);
-                    enemy[i][j]->move(enemy[i][j]->place[0]*blockWidth/20-blockWidth/6,enemy[i][j]->place[1]*blockWidth/20-blockWidth/6);
-                    enemy[i][j]->repaint();
                 }
             }
         }
@@ -689,6 +686,60 @@ void Widget::paintEvent(QPaintEvent *)
         rect = QRect(15.2*blockWidth,0.66*blockWidth,blockWidth,blockWidth/2);
         painter.setPen(qRgb(0,255,0));
         painter.drawText(rect,QString::number(waveNum+1)+"/"+QString::number(level.waveNum));
+        //绘画敌人
+        for(int i=0;i<level.waveNum;i++){
+            for(int j=0;j<enemyNum[i];j++){
+                if(enemy[i][j]->type<=7){//判断是否是BOSS
+                    if(enemy[i][j]->bload<0){//判断是否是以死亡单位
+                        if(enemy[i][j]->diedTime>0){//判断是否还在死亡虚影期
+                            enemy[i][j]->diedTime-=3;
+                            rect=QRect(enemy[i][j]->place[0]*blockWidth/20-blockWidth/6,
+                                    enemy[i][j]->place[1]*blockWidth/20-blockWidth/6,
+                                    blockWidth/3,
+                                    blockWidth/3);
+                            pixmap= new QPixmap(":enemy/slime-1-"+QString::number(enemy[i][j]->type)+".png");
+                            painter.setOpacity((double)enemy[i][j]->diedTime/100);//透明度为100%
+                            painter.drawPixmap(rect,*pixmap);
+                            painter.setOpacity(1);//透明度为100%
+                        }
+                        continue;
+                    }
+                    //敌人本体
+                    rect=QRect(enemy[i][j]->place[0]*blockWidth/20-blockWidth/6,
+                            enemy[i][j]->place[1]*blockWidth/20-blockWidth/6,
+                            blockWidth/3,
+                            blockWidth/3);
+                    pixmap= new QPixmap(":enemy/slime-1-"+QString::number(enemy[i][j]->type)+".png");
+                    painter.drawPixmap(rect,*pixmap);
+                    //血条背景
+                    rect=QRect(enemy[i][j]->place[0]*blockWidth/20-blockWidth/6,
+                            enemy[i][j]->place[1]*blockWidth/20-blockWidth/6,
+                            blockWidth/3+blockWidth/40,
+                            blockWidth/15);
+                    painter.setPen(Qt::NoPen);
+                    painter.setBrush(Qt::darkRed);
+                    painter.drawRect(rect);
+                    //空血条
+                    rect=QRect(enemy[i][j]->place[0]*blockWidth/20-blockWidth/6+blockWidth/60,
+                            enemy[i][j]->place[1]*blockWidth/20-blockWidth/6+blockWidth/75,
+                            blockWidth/3,
+                            blockWidth/20);
+                    painter.setPen(Qt::NoPen);
+                    painter.setBrush(Qt::black);
+                    painter.drawRect(rect);
+                    //剩余血量
+                    rect=QRect(enemy[i][j]->place[0]*blockWidth/20-blockWidth/6+blockWidth/60,
+                            enemy[i][j]->place[1]*blockWidth/20-blockWidth/6+blockWidth/75,
+                            blockWidth/3*((double)enemy[i][j]->bload/enemy[i][j]->maxBload),
+                            blockWidth/20);
+                    painter.setPen(Qt::NoPen);
+                    painter.setBrush(Qt::red);
+                    painter.drawRect(rect);
+                }else{
+
+                }
+            }
+        }
         //绘画塔
         temp=tower->next;
         while(temp!=NULL){

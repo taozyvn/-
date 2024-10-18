@@ -3,8 +3,8 @@
 
 #include <QPoint>
 #include <MapArray.h>
-#include <QWidget>
-class Enemy:public QWidget
+#include <QObject>
+class Enemy:public QObject
 {
     Q_OBJECT
 public:
@@ -19,9 +19,7 @@ public:
     int diedTime=0;//死亡停滞时间
 public:
     void run(Map map);//移动
-    Enemy(QWidget* parents,QPoint place, int type, int no, int blockWidth);
-private:
-    void paintEvent(QPaintEvent *) override;
+    Enemy(QPoint place, int type, int no, int blockWidth);
 private: signals:
     void inHome(int no);//敌人到达信号
     void died(int type);

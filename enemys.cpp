@@ -1,6 +1,6 @@
 #include "enemys.h"
 #include <QPainter>
-Enemy::Enemy(QWidget *parents, QPoint place, int type, int waveNum, int blockWidth):QWidget(parents)
+Enemy::Enemy(QPoint place, int type, int waveNum, int blockWidth)
 {
     this->place[0]=place.x()*20-10;
     this->place[1]=place.y()*20-10;
@@ -30,33 +30,10 @@ Enemy::Enemy(QWidget *parents, QPoint place, int type, int waveNum, int blockWid
         break;
     }
     bload+=bload*(int)(waveNum/100)/10;//血量随波次增长
-    if(type<=7){
-        this->resize(blockWidth/3,blockWidth/3);
-    }
     maxBload=bload;
 }
 
-void Enemy::paintEvent(QPaintEvent *)
-{
-//    if(diedTime<0)return;
-    QPainter painter(this);
-    if(diedTime==0){
-        painter.drawPixmap(QRect(0,0,this->width(),this->height()),QPixmap(":/enemy/slime-1-"+QString::number(type)+".png"));
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(Qt::darkRed);
-        painter.drawRect(QRect(0,0,this->width(),this->height()/5));
-        //空血条
-        painter.setBrush(Qt::black);
-        painter.drawRect(QRect(this->width()*0.05,this->width()*0.05,this->width(),this->height()/7));
-        //剩余血量
-        painter.setBrush(Qt::red);
-        painter.drawRect(QRect(this->width()*0.05,this->width()*0.05,this->width()*0.9*(double)bload/maxBload,this->height()/7));
-    }else{
-        diedTime-=3;
-        painter.setOpacity((double)diedTime/100);//透明度为100%
-        painter.drawPixmap(QRect(0,0,this->width(),this->height()),QPixmap(":/enemy/slime-1-"+QString::number(type)+".png"));
-    }
-}
+
 void Enemy::run(Map map)
 {
     if(bload<=0&&bload>-10000){
