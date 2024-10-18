@@ -39,6 +39,75 @@ QPushButton:hover{
     <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>93</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{
+	background-color:none;
+	border-image: url(:/map/stop-1.png);
+}
+QPushButton:hover{
+	background-color:none;
+	border-image: url(:/map//stop-1-hover.png);
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_3">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>60</y>
+     <width>93</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{
+	background-color:none;
+	border-image: url(:/map/stop-2.png);
+}
+QPushButton:hover{
+	background-color:none;
+	border-image: url(:/map//stop-2-hover.png);
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_4">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>110</y>
+     <width>93</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton{
+	background-color:none;
+	border-image: url(:/map/stop-3.png);
+}
+QPushButton:hover{
+	background-color:none;
+	border-image: url(:/map//stop-3-hover.png);
+}</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections>
@@ -51,6 +120,22 @@ QPushButton:hover{
     <hint type="sourcelabel">
      <x>236</x>
      <y>460</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>236</x>
+     <y>290</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>Settlement</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>46</x>
+     <y>130</y>
     </hint>
     <hint type="destinationlabel">
      <x>236</x>

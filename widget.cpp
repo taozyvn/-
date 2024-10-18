@@ -43,7 +43,6 @@ Widget::~Widget()
 }
 void Widget::checkButtonPlace(int x, int y)
 {
-    if(map.map[x][y]>2&&map.map[x][y]<7)return;
     if(x==0){
         if(y==0){//[左上角
             initButton(x,y,1);
@@ -54,6 +53,17 @@ void Widget::checkButtonPlace(int x, int y)
         }
     }else if(x==15){
         if(y==0){//右上角
+            stop=true;
+            Settlement Dialog(blockWidth,this);
+            Dialog.exec();
+            if(Dialog.choose==2){
+                died();
+            }else if(Dialog.choose==3){
+                int levelNum=level.level;
+                clearInfo();
+                gameStart(levelNum);
+            }
+            stop=false;
             return;
         }else if(y==8){//右下角
             initButton(x,y,7);
@@ -278,9 +288,9 @@ void Widget::clearInfo()
     waveNum=0;
     endTime=0;
     tower->next=NULL;
-    stars[0]=true;
-    stars[1]=true;
-    stars[2]=true;
+    stars[0]=false;
+    stars[1]=false;
+    stars[2]=false;
     heart=5;
     for(int i=0;i<12;i++){
         icons[i]->hide();
@@ -289,8 +299,28 @@ void Widget::clearInfo()
     ui->label->hide();
     qDebug()<<"out clearnInfo";
 }
+
+void Widget::gameStart(int levelNum)
+{
+    level.getLevelInfo(levelNum);
+    Settlement Dialog(blockWidth,0,stars,level.objective,this);
+    Dialog.exec();
+    map.getLevelMap(levelNum);
+    for(int i=0;i<3;i++)stars[i]=true;
+    timeNum=0;
+    enemy.clear();
+    enemyNum.clear();
+    enemy.resize(level.waveNum);//给波次分配空间
+    enemyNum.resize(level.waveNum);//给敌人数量分配空间
+    for(int i=0;i<level.waveNum;i++){
+        enemy[i].resize(level.enemy[i]);//给敌人分配空间
+        enemyNum[i]=0;//每波的当前敌人数都是0
+    }
+    mola=level.startMola;
+}
 void Widget::timeOut()
 {
+    if(stop)return;
     qDebug()<<"in timeOut";
     //关卡中的事件
     if(mode==3){
@@ -308,10 +338,10 @@ void Widget::timeOut()
                 });
                 connect(newEnemy,&Enemy::died,[=](int type){
                     switch (type) {
-                        case 1:mola+=(1.0+(timeNum/2)%2)*(1.0+(double)moreMola/2);;break;
-                        case 2:mola+=2.0*(1.0+(double)moreMola/2);;break;
-                        case 5:mola+=1.0*(1.0+(double)moreMola/2);break;
-;                    }
+                        case 1:mola+=(1.0+(timeNum/2)%2)*(1.0+(double)moreMola/2);break;
+                        case 2:mola+=2.0*(1.0+(double)moreMola/2);break;
+                        case 5:mola+=(1.0+(timeNum/2)%2)*(1.0+(double)moreMola/2);break;
+                    }
                 });
                 newEnemy->show();
                 enemy[waveNum][enemyNum[waveNum]]=newEnemy;
@@ -491,22 +521,7 @@ void Widget::mousePressEvent(QMouseEvent *event)
     case 1://关卡选择界面
         if(x-2>=0&&x-2<11&&y-3>=0){
             if((x-2)%2==0&&(y-3)%2==0&&history.level>=(x-2)/2+1+((y-3)/2)*5){
-                level.getLevelInfo((x-2)/2+1+((y-3)/2)*5);
-                Settlement Dialog(blockWidth,0,stars,level.objective,this);
-                Dialog.exec();
-                map.getLevelMap((x-2)/2+1+((y-3)/2)*5);
-                for(int i=0;i<3;i++)stars[i]=true;
-                timeNum=0;
-                enemy.clear();
-                enemyNum.clear();
-                enemy.resize(level.waveNum);//给波次分配空间
-                enemyNum.resize(level.waveNum);//给敌人数量分配空间
-                for(int i=0;i<level.waveNum;i++){
-                    enemy[i].resize(level.enemy[i]);//给敌人分配空间
-                    enemyNum[i]=0;//每波的当前敌人数都是0
-                }
-                mola=level.startMola;
-                if(level.level==2)stars[1]=false;
+                gameStart((x-2)/2+1+((y-3)/2)*5);
                 mode=3;
             }
         }

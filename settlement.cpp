@@ -53,9 +53,40 @@ Settlement::Settlement(int blockWidth,int mode,bool stars[3],QString objective[3
     }
     ui->pushButton->resize(blockWidth,blockWidth/1.9);
     ui->pushButton->move(blockWidth*2.05,blockWidth*4.75);
+    ui->pushButton_2->hide();
+    ui->pushButton_3->hide();
+    ui->pushButton_4->hide();
+}
+
+Settlement::Settlement(int blockWidth, QWidget *parent):
+    QDialog(parent),ui(new Ui::Settlement)
+{
+    ui->setupUi(this);
+    this->setStyleSheet("border-image: url(:/map/stop.png);");
+    this->setWindowFlag(Qt::FramelessWindowHint);//设置为无边框
+    resize(blockWidth*5,blockWidth*5*1.25);
+    ui->pushButton_2->move(blockWidth*1.5,blockWidth*((0*0.8)+2.8));
+    ui->pushButton_3->move(blockWidth*1.5,blockWidth*((1*0.8)+2.8));
+    ui->pushButton_4->move(blockWidth*1.5,blockWidth*((2*0.8)+2.8));
+    ui->pushButton_2->resize(blockWidth*2,blockWidth/2);
+    ui->pushButton_3->resize(blockWidth*2,blockWidth/2);
+    ui->pushButton_4->resize(blockWidth*2,blockWidth/2);
+    ui->pushButton->hide();
 }
 
 Settlement::~Settlement()
 {
     delete ui;
+}
+
+void Settlement::on_pushButton_2_clicked()
+{
+    choose=2;
+    close();
+}
+
+void Settlement::on_pushButton_3_clicked()
+{
+    choose=3;
+    close();
 }

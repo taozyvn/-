@@ -96,5 +96,12 @@
         <file>map/ok.png</file>
         <file>map/ok_hover.png</file>
         <file>cannon/range.png</file>
+        <file>map/stop.png</file>
+        <file>map/stop-1.png</file>
+        <file>map/stop-1-hover.png</file>
+        <file>map/stop-2.png</file>
+        <file>map/stop-2-hover.png</file>
+        <file>map/stop-3.png</file>
+        <file>map/stop-3-hover.png</file>
     </qresource>
 </RCC>

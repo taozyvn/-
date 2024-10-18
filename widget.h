@@ -25,6 +25,7 @@ public:
     int moreMola=0;//岩元素塔数量
     double mola=30;//金币数
     bool stars[3]={true,true,true};//星星数
+    bool stop=false;//暂停标志位
     QPoint clickedPlace;//被点击的位置
     QPushButton * icons[12];//12种按钮
     QLabel * towerLevel;
@@ -42,6 +43,7 @@ public:
     void win();//游戏胜利
     void died();//游戏失败
     void clearInfo();//擦除关卡内信息
+    void gameStart(int levelNum);
     QPoint getBullet(const QPoint &p1, const QPoint &p2, double percentage);
 public slots:
     void timeOut();

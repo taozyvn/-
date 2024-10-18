@@ -66,7 +66,7 @@ void LevelInfo::getLevelInfo(int level)
         objective[1]="过关时有一百摩拉";
         objective[2]="拥有等级二的塔";
         waveNum=10;
-        startMola=40;
+        startMola=50;
         enemyType.resize(waveNum);
         enemyTime.resize(waveNum);
         enemy.resize(waveNum);
@@ -80,12 +80,12 @@ void LevelInfo::getLevelInfo(int level)
                 case 1:
                 enemyType[i]=5;
                 enemyTime[i]=8;
-                enemy[i]*=2;
+                enemy[i]*=2.5;
                 break;
                 case 2:
                 enemyType[i]=2;
                 enemyTime[i]=15;
-                enemy[i]/=1.5;
+                enemy[i]/=1.8;
                 break;
             }
         }
