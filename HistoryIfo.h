@@ -5,7 +5,7 @@
 class History
 {
 public:
-    int level=3;
+    int level=4;
     int stars[15]={0};
     int tower[7];
 public:

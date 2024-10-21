@@ -93,5 +93,42 @@ void LevelInfo::getLevelInfo(int level)
         enemyTime[9]=20;
         waveTime=20;
         break;
+        //第四关的数据
+        case 4:
+        objective[1]="使用雷元素塔";
+        objective[2]="拥有等级三的塔";
+        waveNum=10;
+        startMola=50;
+        enemyType.resize(waveNum);
+        enemyTime.resize(waveNum);
+        enemy.resize(waveNum);
+        for(int i=0;i<10;i++){
+            enemy[i]=8+i*2;
+            switch (i%4) {
+                case 0:
+                enemyType[i]=1;
+                enemyTime[i]=14;
+                break;
+                case 1:
+                enemyType[i]=3;
+                enemyTime[i]=15;
+                enemy[i]/=2;
+                break;
+                case 2:
+                enemyType[i]=5;
+                enemyTime[i]=8;
+                enemy[i]*=2.5;
+                break;
+                case 3:
+                enemyType[i]=2;
+                enemyTime[i]=15;
+                enemy[i]/=1.7;
+                break;
+            }
+        }
+        enemyType[9]=2;
+        enemyTime[9]=20;
+        waveTime=20;
+        break;
     }
 }

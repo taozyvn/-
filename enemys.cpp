@@ -13,11 +13,11 @@ Enemy::Enemy(QPoint place, int type, int waveNum, int blockWidth)
         spead=2;
         break;
         case 2://蓝色史莱姆，强壮的，速度慢的
-        bload=300;
+        bload=400;
         spead=3;
         break;
         case 3://紫色史莱姆，生命值特别高，速度特别慢
-        bload=500;
+        bload=800;
         spead=5;
         break;
         case 4://红色史莱姆，缓慢恢复生命，速度慢

@@ -419,6 +419,19 @@ void Widget::buttonClicked()
         }
     }else if(sender()==icons[2]){
     }else if(sender()==icons[3]){
+        mola-=40;
+        if(mola<0){
+            mola+=40;
+            return;
+        }else{
+            moreMola++;
+            Tower *temp=tower;
+            while(temp->next!=NULL){
+                temp=temp->next;
+            }
+            temp->next=new Tower(4,clickedPlace,timeNum);
+            map.map[clickedPlace.x()][clickedPlace.y()]=7;
+        }
     }else if(sender()==icons[4]){
         mola-=30;
         if(mola<0){
@@ -745,23 +758,39 @@ void Widget::paintEvent(QPaintEvent *)
         while(temp!=NULL){
             //绘画子弹
             switch (temp->type) {
-                case 2:
+                case 2:case 4:
                     if(temp->enemy[0]==-1){
                         break;
                     }
                     if(enemy[temp->enemy[0]][temp->enemy[1]]->bload<=0){
                         break;
                     }
-                QPoint bulletPlace=getBullet(QPoint(temp->place.x()*20+10,temp->place.y()*20+10),
-                                             QPoint(enemy[temp->enemy[0]][temp->enemy[1]]->place[0],
-                                                    enemy[temp->enemy[0]][temp->enemy[1]]->place[1]),
-                                             (double)((timeNum-temp->startTime)%temp->fireSpeed)/temp->fireSpeed);
-                rect=QRect(bulletPlace.x()*blockWidth/20-blockWidth/20,
-                        bulletPlace.y()*blockWidth/20-blockWidth/20,
-                        blockWidth/10,
-                        blockWidth/10);
-                painter.setBrush(Qt::cyan);
-                painter.drawEllipse(rect);
+                    if(temp->type==2){
+                        QPoint bulletPlace=getBullet(QPoint(temp->place.x()*20+10,temp->place.y()*20+10),
+                                                     QPoint(enemy[temp->enemy[0]][temp->enemy[1]]->place[0],
+                                                            enemy[temp->enemy[0]][temp->enemy[1]]->place[1]),
+                                                     (double)((timeNum-temp->startTime)%temp->fireSpeed)/temp->fireSpeed);
+                        rect=QRect(bulletPlace.x()*blockWidth/20-blockWidth/20,
+                                bulletPlace.y()*blockWidth/20-blockWidth/20,
+                                blockWidth/10,
+                                blockWidth/10);
+                    }else if(temp->type==4){
+                        if(((timeNum-temp->startTime)%temp->fireSpeed)/(temp->fireSpeed/5)-4<0)break;
+                        QPoint bulletPlace=getBullet(QPoint(temp->place.x()*20+10,temp->place.y()*20+10),
+                                                     QPoint(enemy[temp->enemy[0]][temp->enemy[1]]->place[0],
+                                                            enemy[temp->enemy[0]][temp->enemy[1]]->place[1]),
+                                                     (double)((timeNum-temp->startTime)%temp->fireSpeed)/(temp->fireSpeed/5)-4);
+                        rect=QRect(bulletPlace.x()*blockWidth/20-blockWidth/20,
+                                bulletPlace.y()*blockWidth/20-blockWidth/20,
+                                blockWidth/10,
+                                blockWidth/10);
+                    }
+                    if(temp->type==2){
+                        painter.setBrush(Qt::cyan);
+                    }else if(temp->type==4){
+                        painter.setBrush(Qt::magenta);
+                    }
+                    painter.drawEllipse(rect);
                 break;
             }
             //塔身

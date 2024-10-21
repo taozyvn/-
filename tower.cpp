@@ -19,12 +19,16 @@ Tower::Tower(int type, QPoint place,int startTime)
         case 3:
             break;
         case 4:
+            price=40;
+            fireSpeed=50;
+            damage=250;
+            range=5;
+            break;
+        case 5:
             price=30;
             fireSpeed=1000;
             damage=0;
             range=0;
-            break;
-        case 5:
             break;
         case 6:
             break;
@@ -60,7 +64,26 @@ void Tower::Action(QVector<int>& enemyNum,QVector<QVector<Enemy *>>& enemy)
             }
         case 3:
             break;
-        case 5:
+        case 4:
+            if(this->enemy[0]!=-1){
+                enemy[this->enemy[0]][this->enemy[1]]->bload-=damage;
+            }
+            for(int i=0;i<enemyNum.length();i++){//遍历寻找符合攻击条件的敌人
+                for(int j=0;j<enemyNum[i];j++){
+                    if(enemy[i][j]->bload<=0)continue;
+                    if((double)((enemy[i][j]->place[0]-place.x()*20-10)*
+                            (enemy[i][j]->place[0]-place.x()*20-10)+
+                            (enemy[i][j]->place[1]-place.y()*20-10)*
+                            (enemy[i][j]->place[1]-place.y()*20-10))/400<=range*range){//根据勾股定理算出距离
+                        this->enemy[0]=i;
+                        this->enemy[1]=j;
+                        angle =getAngle(place,enemy[i][j]->place[0],enemy[i][j]->place[1]);
+                        return;
+                    }else{
+                        this->enemy[0]=-1;
+                    }
+                }
+            }
             break;
         case 6:
             break;
@@ -94,10 +117,14 @@ void Tower::levelUp()
     level++;
     switch (type) {
         case 2:
-            damage*=2;
+            damage*=1.5;
             fireSpeed-=1;
             price*=2.5;
             break;
+        case 4:
+            damage*=1.5;
+            fireSpeed-=5;
+            price*=2.5;
     }
 }
 
