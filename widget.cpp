@@ -14,7 +14,7 @@ Widget::Widget(QWidget *parent)
     ui->setupUi(this);
     repaint();
     QTimer * timer= new QTimer(this);
-    timer->start(3);//正常速度为33
+    timer->start(16);//正常速度为33
     connect(timer,&QTimer::timeout,this,&Widget::timeOut);
     icons[0]=ui->pushButton_1;
     icons[1]=ui->pushButton_2;
@@ -340,6 +340,7 @@ void Widget::timeOut()
                     switch (type) {
                         case 1:mola+=(1.0+(timeNum/2)%2)*(1.0+(double)moreMola/2);break;
                         case 2:mola+=2.0*(1.0+(double)moreMola/2);break;
+                        case 3:mola+=3.0*(1.0+(double)moreMola/2);break;
                         case 5:mola+=(1.0+(timeNum/2)%2)*(1.0+(double)moreMola/2);break;
                     }
                 });
