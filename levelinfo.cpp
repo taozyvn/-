@@ -19,7 +19,7 @@ void LevelInfo::getLevelInfo(int level)
         enemyType.resize(waveNum);
         enemyTime.resize(waveNum);
         enemy.resize(waveNum);
-        for(int i=0;i<5;i++){
+        for(int i=0;i<waveNum;i++){
             enemy[i]=5+i*2;
             enemyType[i]=1;
             enemyTime[i]=15;
@@ -38,7 +38,7 @@ void LevelInfo::getLevelInfo(int level)
         enemyType.resize(waveNum);
         enemyTime.resize(waveNum);
         enemy.resize(waveNum);
-        for(int i=0;i<10;i++){
+        for(int i=0;i<waveNum;i++){
             enemy[i]=5+i*2;
             switch (i%3) {
                 case 0:
@@ -70,7 +70,7 @@ void LevelInfo::getLevelInfo(int level)
         enemyType.resize(waveNum);
         enemyTime.resize(waveNum);
         enemy.resize(waveNum);
-        for(int i=0;i<10;i++){
+        for(int i=0;i<waveNum;i++){
             enemy[i]=5+i*2;
             switch (i%3) {
                 case 0:
@@ -102,7 +102,7 @@ void LevelInfo::getLevelInfo(int level)
         enemyType.resize(waveNum);
         enemyTime.resize(waveNum);
         enemy.resize(waveNum);
-        for(int i=0;i<10;i++){
+        for(int i=0;i<waveNum;i++){
             enemy[i]=8+i*2;
             switch (i%4) {
                 case 0:
@@ -129,6 +129,44 @@ void LevelInfo::getLevelInfo(int level)
         enemyType[9]=2;
         enemyTime[9]=20;
         waveTime=20;
+        break;
+        //第五关的数据
+        case 5:
+        objective[1]="过关时有一百摩拉";
+        objective[2]="过关时有两百摩拉";
+        waveNum=15;
+        startMola=80;
+        enemyType.resize(waveNum);
+        enemyTime.resize(waveNum);
+        enemy.resize(waveNum);
+        for(int i=0;i<waveNum;i++){
+            enemy[i]=6+i*3;
+            switch (i%4) {
+                case 0:
+                enemyType[i]=1;
+                enemyTime[i]=14;
+                break;
+                case 1:
+                enemyType[i]=3;
+                enemyTime[i]=15;
+                enemy[i]/=2;
+                break;
+                case 2:
+                enemyType[i]=5;
+                enemyTime[i]=8;
+                enemy[i]*=2.5;
+                break;
+                case 3:
+                enemyType[i]=2;
+                enemyTime[i]=15;
+                enemy[i]/=1.7;
+                break;
+            }
+        }
+        enemyType[0]=8;
+        enemy[0]=1;
+        enemyType[0]=5;
+        waveTime=12;
         break;
     }
 }

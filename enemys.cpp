@@ -7,7 +7,7 @@ Enemy::Enemy(QPoint place, int type, int waveNum, int blockWidth)
     this->place[2]=0;
     this->type=type;
     this->no=waveNum;
-    switch (type) {
+    switch (((type-1)%7)+1) {
         case 1://绿色史莱姆，普通的
         bload=100;
         spead=2;
@@ -20,7 +20,7 @@ Enemy::Enemy(QPoint place, int type, int waveNum, int blockWidth)
         bload=800;
         spead=5;
         break;
-        case 4://红色史莱姆，缓慢恢复生命，速度慢
+        case 4://红色史莱姆，生命值下降到一半时，速度提升
         bload=200;
         spead=3;
         break;
@@ -28,8 +28,23 @@ Enemy::Enemy(QPoint place, int type, int waveNum, int blockWidth)
         bload=50;
         spead=1;
         break;
+        case 6://灰色史莱姆，生命值中等，速度慢，免疫控制
+        bload =200;
+        spead=3;
+        break;
+        case 7://粉色史莱姆，缓慢恢复生命，速度慢
+        bload =300;
+        spead=3;
     }
     bload+=bload*(int)(waveNum/100)/10;//血量随波次增长
+    if(type>7){
+        bload*=500;
+        spead*=2;
+        if(waveNum/100==0){
+            bload*=3;
+            spead*=3;
+        }
+    }
     maxBload=bload;
 }
 
@@ -39,7 +54,7 @@ void Enemy::run(Map map)
     if(bload<=0&&bload>-10000){
         diedTime=100;
         bload=-99999;
-        stop=999999;
+        stop=9999999;
         emit died(type);
     }
     if(stop>0){

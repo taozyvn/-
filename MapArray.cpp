@@ -156,6 +156,44 @@ void Map::getLevelMap(int level)
         road[7]=QPoint(3,2);
         road[8]=QPoint(4,3);
         road[9]=QPoint(0,0);
+    }else if(level==5){
+        int tempArray[16][9]={{2,2,2,2,2,2,2,2,2},
+                              {2,2,2,3,3,3,2,2,2},
+                              {2,2,2,3,0,3,2,2,2},
+                              {2,3,3,3,2,3,3,3,2},
+                              {2,3,0,2,1,2,1,3,2},
+                              {2,3,3,3,3,5,0,3,2},
+                              {2,1,1,0,1,0,1,3,2},
+                              {2,3,3,3,3,3,3,3,2},
+                              {2,3,1,0,1,0,1,1,2},
+                              {2,3,0,4,3,3,3,3,2},
+                              {2,3,1,2,1,2,0,3,2},
+                              {2,3,3,3,2,3,3,3,2},
+                              {2,2,2,3,0,3,2,2,2},
+                              {2,2,2,3,3,3,2,2,2},
+                              {2,2,2,2,2,2,2,2,2},
+                              {6,2,2,2,2,2,2,2,2},
+                              };
+        copy(tempArray);
+        startBlock=QPoint(6,6);
+        road[0]=QPoint(1,4);
+        road[1]=QPoint(4,2);
+        road[2]=QPoint(3,2);
+        road[3]=QPoint(4,2);
+        road[4]=QPoint(3,2);
+        road[5]=QPoint(2,2);
+        road[6]=QPoint(3,2);
+        road[7]=QPoint(2,4);
+        road[8]=QPoint(1,6);
+        road[9]=QPoint(2,4);
+        road[10]=QPoint(3,2);
+        road[11]=QPoint(2,2);
+        road[12]=QPoint(3,2);
+        road[13]=QPoint(4,2);
+        road[14]=QPoint(3,2);
+        road[15]=QPoint(4,2);
+        road[16]=QPoint(1,4);
+        road[17]=QPoint(0,0);
     }
 }
 

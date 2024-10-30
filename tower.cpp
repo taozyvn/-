@@ -43,7 +43,7 @@ void Tower::Action(QVector<int>& enemyNum,QVector<QVector<Enemy *>>& enemy)
     switch(type){
         case 1:
  
-        case 2:
+        case 2:case 4:
             if(this->enemy[0]!=-1){
                 enemy[this->enemy[0]][this->enemy[1]]->bload-=damage;
             }
@@ -77,36 +77,6 @@ void Tower::Action(QVector<int>& enemyNum,QVector<QVector<Enemy *>>& enemy)
             }
         case 3:
             break;
-        case 4:
-        if(this->enemy[0]!=-1){
-            enemy[this->enemy[0]][this->enemy[1]]->bload-=damage;
-        }
-        for(int i=0;i<enemyNum.length();i++){//遍历寻找符合攻击条件的敌人
-            for(int j=0;j<enemyNum[i];j++){
-                if(enemy[i][j]->bload<=0)continue;
-                if((double)((enemy[i][j]->place[0]-place.x()*20-10)*
-                        (enemy[i][j]->place[0]-place.x()*20-10)+
-                        (enemy[i][j]->place[1]-place.y()*20-10)*
-                        (enemy[i][j]->place[1]-place.y()*20-10))/400<=range*range){//根据勾股定理算出距离
-                    hasEnemy=true;
-                    if(this->enemy[0]==-1){
-                        this->enemy[0]=i;
-                        this->enemy[1]=j;
-                    }else if(enemy[this->enemy[0]][this->enemy[1]]->bload<0){
-                        this->enemy[0]=i;
-                        this->enemy[1]=j;
-                    }else if(enemy[this->enemy[0]][this->enemy[1]]->mode<enemy[i][j]->mode&&enemy[this->enemy[0]][this->enemy[1]]->place[2]<enemy[i][j]->place[2]){
-                        this->enemy[0]=i;
-                        this->enemy[1]=j;
-                    }
-                }
-            }
-            if(!hasEnemy)this->enemy[0]=-1;
-            if(this->enemy[0]!=-1){
-                angle =getAngle(place,enemy[this->enemy[0]][this->enemy[1]]->place[0],enemy[this->enemy[0]][this->enemy[1]]->place[1]);
-            }
-        }
-            break;
         case 6:
             break;
         case 7:
@@ -139,15 +109,17 @@ void Tower::levelUp()
     level++;
     switch (type) {
         case 2:
-            damage*=1.5;
+            damage*=1.75;
             fireSpeed-=1;
             range+=0.5;
             price*=2.5;
             break;
         case 4:
-            damage*=1.5;
+            damage*=1.75;
             fireSpeed-=5;
             range+=0.5;
+            price*=2.5;
+        case 5:
             price*=2.5;
     }
 }
