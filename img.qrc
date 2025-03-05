@@ -103,5 +103,13 @@
         <file>map/stop-2-hover.png</file>
         <file>map/stop-3.png</file>
         <file>map/stop-3-hover.png</file>
+        <file>cannon/technology1.png</file>
+        <file>cannon/technology2.png</file>
+        <file>cannon/technology3.png</file>
+        <file>map/box.png</file>
+        <file>map/longblock.png</file>
+        <file>map/reset.png</file>
+        <file>map/star-false.png</file>
+        <file>map/star-true.png</file>
     </qresource>
 </RCC>

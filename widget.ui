@@ -231,7 +231,8 @@ background:none;</string>
    </property>
    <property name="styleSheet">
     <string notr="true">background-color:none;
-border-image: url(:/cannon/range.png);</string>
+border-image: url(:/cannon/range.png);
+</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -239,8 +240,8 @@ border-image: url(:/cannon/range.png);</string>
     <rect>
      <x>500</x>
      <y>390</y>
-     <width>20</width>
-     <height>20</height>
+     <width>21</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="styleSheet">

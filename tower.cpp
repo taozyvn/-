@@ -2,7 +2,7 @@
 #include "cmath"
 
 #include <QDebug>
-Tower::Tower(int type, QPoint place,int startTime)
+Tower::Tower(int type, QPoint place, int startTime,int towerLevelNum)
 {
     this->startTime=startTime;
     this->type=type;
@@ -10,23 +10,23 @@ Tower::Tower(int type, QPoint place,int startTime)
     switch(type){
         case 1:
             break;
-        case 2:
+        case 2://风元素塔数值
             price=20;
-            fireSpeed=10;
-            damage=20;
-            range=3;
+            fireSpeed=15-int(towerLevelNum%100/10);
+            damage=30+int(towerLevelNum%10);
+            range=3+double(int(towerLevelNum/100))/2;
             break;
         case 3:
             break;
-        case 4:
+        case 4://雷元素塔数值
             price=40;
-            fireSpeed=50;
-            damage=250;
-            range=5;
+            fireSpeed=75-int(towerLevelNum%100/10);
+            damage=300+int(towerLevelNum%10);
+            range=5+double(int(towerLevelNum/100))/2;
             break;
-        case 5:
+        case 5://岩元素塔数值
             price=30;
-            fireSpeed=1000;
+            fireSpeed=100000;
             damage=0;
             range=0;
             break;
@@ -37,13 +37,22 @@ Tower::Tower(int type, QPoint place,int startTime)
     }
 }
 
+//QString names[21]={
+//    "火元素塔伤害提升","火元素塔攻速提升","火元素塔范围提升",
+//    "风元素塔伤害提升","风元素塔攻速提升","风元素塔范围提升",
+//    "冰元素塔伤害提升","冰元素塔攻速提升","冰元素塔范围提升",
+//    "雷元素塔伤害提升","雷元素塔攻速提升","雷元素塔范围提升",
+//    "岩元素塔价格降低","初始摩拉数增加10","获得的摩拉增加5%",
+//    "水元素塔伤害提升","水元素塔减速提升","水元素塔范围提升",
+//    "草元素塔伤害提升","草元素塔伤害提升","草元素塔伤害提升"};
+
 void Tower::Action(QVector<int>& enemyNum,QVector<QVector<Enemy *>>& enemy)
 {
     bool hasEnemy=false;
     switch(type){
         case 1:
  
-        case 2:case 4:
+        case 2:case 4://风元素塔和雷元素塔的攻击
             if(this->enemy[0]!=-1){
                 enemy[this->enemy[0]][this->enemy[1]]->bload-=damage;
             }
@@ -108,19 +117,19 @@ void Tower::levelUp()
 {
     level++;
     switch (type) {
-        case 2:
+        case 2://风元素塔升级
             damage*=1.75;
             fireSpeed-=1;
             range+=0.5;
             price*=2.5;
             break;
-        case 4:
+        case 4://雷元素塔升级
             damage*=1.75;
             fireSpeed-=5;
             range+=0.5;
             price*=2.5;
+            break;
         case 5:
             price*=2.5;
     }
 }
-

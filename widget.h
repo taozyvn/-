@@ -35,6 +35,8 @@ public:
     QVector<int> enemyNum;//当前存在的敌人数
     QVector<QVector<Enemy*>> enemy;//指向每一个敌人的数组
     Tower * tower;//存放塔的链表
+    QWidget box;//科技树详细详细信息页面的提示框
+    QLabel boxText;//科技树详细信息页面的提示信息
 public:
     Widget(QWidget *parent = nullptr);
     ~Widget();
@@ -44,12 +46,14 @@ public:
     void died();//游戏失败
     void clearInfo();//擦除关卡内信息
     void gameStart(int levelNum);
+    void textBoxShow(int x, int y);
     QPoint getBullet(const QPoint &p1, const QPoint &p2, double percentage);
 public slots:
     void timeOut();
     void buttonClicked();
 protected:
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
 private:
     Ui::Widget *ui;

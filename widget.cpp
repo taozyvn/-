@@ -36,6 +36,14 @@ Widget::Widget(QWidget *parent)
     }
     this->setWindowFlag(Qt::FramelessWindowHint);
     tower=new Tower();
+    box.setParent(this);
+    box.setStyleSheet("border-image: url(:/map/box.png);background:none;");
+    box.resize(200,105);
+    boxText.setParent(&box);
+    boxText.setText("测试文本");
+    boxText.setStyleSheet("background:none;");
+    boxText.setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    box.hide();
 }
 Widget::~Widget()
 {
@@ -83,7 +91,7 @@ void Widget::checkButtonPlace(int x, int y)
 
 void Widget::initButton(int x, int y, int type)
 {
-    qDebug()<<"in initButton";
+//    qDebug()<<"in initButton";
     ui->widget->hide();
     ui->label->hide();
     for(int i=0;i<12;i++)icons[i]->hide();
@@ -222,12 +230,12 @@ void Widget::initButton(int x, int y, int type)
     }
     icons[7]->show();
     icons[7]->raise();
-    qDebug()<<"out initButton";
+//    qDebug()<<"out initButton";
 }
 
 void Widget::win()
 {
-    qDebug()<<"in win";
+//    qDebug()<<"in win";
     if(level.level==2){
         Tower * temp=tower;
         int towerNum=0;
@@ -250,23 +258,23 @@ void Widget::win()
     mode=1;
     map.getLevelMap(-1);
     clearInfo();
-    qDebug()<<"out win";
+//    qDebug()<<"out win";
 }
 
 void Widget::died()
 {
-    qDebug()<<"in died";
+//    qDebug()<<"in died";
     Settlement Dialog(blockWidth,1,stars,level.objective,this);
     Dialog.exec();
     mode=1;
     map.getLevelMap(-1);
     clearInfo();
-    qDebug()<<"out died";
+//    qDebug()<<"out died";
 }
 
 void Widget::clearInfo()
 {
-    qDebug()<<"in clearnInfo";
+//    qDebug()<<"in clearnInfo";
     if(tower->next!=NULL){
         Tower * temp=tower->next;
         Tower * temp2=temp->next;
@@ -297,7 +305,7 @@ void Widget::clearInfo()
     }
     ui->widget->hide();
     ui->label->hide();
-    qDebug()<<"out clearnInfo";
+//    qDebug()<<"out clearnInfo";
 }
 
 void Widget::gameStart(int levelNum)
@@ -316,32 +324,33 @@ void Widget::gameStart(int levelNum)
         enemy[i].resize(level.enemy[i]);//给敌人分配空间
         enemyNum[i]=0;//每波的当前敌人数都是0
     }
-    mola=level.startMola;
+    mola=level.startMola+history.towerLevel[4][1]*10;
 }
+
 void Widget::timeOut()
 {
     if(stop)return;
-    qDebug()<<"in timeOut";
+//    qDebug()<<"in timeOut";
     //关卡中的事件
     if(mode==3){
         if(timeNum%level.enemyTime[waveNum]==0){//出怪
             if(level.enemy[waveNum]>enemyNum[waveNum]){//怪物数量没有达标
-                qDebug()<<map.startBlock<<level.enemyType[waveNum]<<waveNum*100+enemyNum[waveNum];
                 Enemy * newEnemy=new Enemy(map.startBlock,
                                            level.enemyType[waveNum],
                                            waveNum*100+enemyNum[waveNum]
                                            ,blockWidth);//创建新的敌人
-                connect(newEnemy,&Enemy::inHome,[=](){
+                connect(newEnemy,&Enemy::inHome,[=](){//敌人进家处理函数
                     heart--;
                     stars[0]=false;
                     if(heart==0)died();
                 });
-                connect(newEnemy,&Enemy::died,[=](int type){
+                connect(newEnemy,&Enemy::died,[=](int type){//敌人死亡处理函数
+                    double multiply=(1.0+(double)moreMola/2)+history.towerLevel[4][2]*0.05;
                     switch (type) {
-                        case 1:mola+=(1.0+(timeNum/2)%2)*(1.0+(double)moreMola/2);break;
-                        case 2:mola+=2.0*(1.0+(double)moreMola/2);break;
-                        case 3:mola+=3.0*(1.0+(double)moreMola/2);break;
-                        case 5:mola+=(1.0+(timeNum/2)%2)*(1.0+(double)moreMola/2);break;
+                        case 1:mola+=(1.0+(timeNum/2)%2)*multiply;break;
+                        case 2:mola+=2.0*multiply;break;
+                        case 3:mola+=3.0*multiply;break;
+                        case 5:mola+=(1.0+(timeNum/2)%2)*multiply;break;
                         case 8:mola+=100.0*(1.0+(double)moreMola/2);break;
                     }
                 });
@@ -398,13 +407,13 @@ void Widget::timeOut()
     }
     repaint();
     timeNum++;
-    qDebug()<<"out timeout";
+//    qDebug()<<"out timeout";
 
 }
 
 void Widget::buttonClicked()
 {
-    qDebug()<<"in buttomClicked";
+//    qDebug()<<"in buttomClicked";
     if(sender()==icons[0]){
     }else if(sender()==icons[1]){
         mola-=20;
@@ -416,7 +425,8 @@ void Widget::buttonClicked()
             while(temp->next!=NULL){
                 temp=temp->next;
             }
-            temp->next=new Tower(2,clickedPlace,timeNum);
+            int towerLevel=history.towerLevel[1][0]+history.towerLevel[1][1]*10+history.towerLevel[1][2]*100;
+            temp->next=new Tower(2,clickedPlace,timeNum,towerLevel);
             map.map[clickedPlace.x()][clickedPlace.y()]=7;
         }
     }else if(sender()==icons[2]){
@@ -431,7 +441,8 @@ void Widget::buttonClicked()
             while(temp->next!=NULL){
                 temp=temp->next;
             }
-            temp->next=new Tower(4,clickedPlace,timeNum);
+            int towerLevel=history.towerLevel[3][0]+history.towerLevel[3][1]*10+history.towerLevel[3][2]*100;
+            temp->next=new Tower(4,clickedPlace,timeNum,towerLevel);
             map.map[clickedPlace.x()][clickedPlace.y()]=7;
         }
     }else if(sender()==icons[4]){
@@ -445,7 +456,7 @@ void Widget::buttonClicked()
             while(temp->next!=NULL){
                 temp=temp->next;
             }
-            temp->next=new Tower(5,clickedPlace,timeNum);
+            temp->next=new Tower(5,clickedPlace,timeNum,0);
             map.map[clickedPlace.x()][clickedPlace.y()]=7;
             if(level.level==1)stars[2]=false;
         }
@@ -514,11 +525,11 @@ void Widget::buttonClicked()
     }
     ui->widget->hide();
     ui->label->hide();
-    qDebug()<<"out buttonClicked";
+//    qDebug()<<"out buttonClicked";
 }
 void Widget::mousePressEvent(QMouseEvent *event)
 {
-    qDebug()<<"in mousePressEvent";
+//    qDebug()<<"in mousePressEvent";
     QPoint place = event->globalPos();//获得点击的位置
     place = this->mapFromGlobal(place);
     int x=place.x()/blockWidth,y=place.y()/blockWidth;//用坐标除以格子宽度，得到格子行列号
@@ -540,16 +551,94 @@ void Widget::mousePressEvent(QMouseEvent *event)
                 mode=3;
             }
         }
+        if(x==13&&y>1&&y<7){//进入科技树界面
+            map.getLevelMap(-2);
+            mode=2;
+            setMouseTracking(true);
+        }
+        break;
+    case 2://科技树界面
+        if(x==13&&y>1&&y<6){//进入关卡选择界面
+            map.getLevelMap(-1);
+            mode=1;
+            setMouseTracking(false);
+        }else if((x-1)%2==0&&(y-1)%2==0&&x<12&&(y/2<3||x/6==0)){
+            switch (history.towerLevel[int(y/2)*2+x/6][x/2%3]){
+                case 0:
+                    history.PrimoNum-=40;
+                    if(history.PrimoNum<0){
+                        history.PrimoNum+=40;
+                        break;
+                    }
+                    history.towerLevel[int(y/2)*2+x/6][x/2%3]++;
+                    break;
+                case 1:
+                    history.PrimoNum-=60;
+                    if(history.PrimoNum<0){
+                        history.PrimoNum+=60;
+                        break;
+                    }
+                    history.towerLevel[int(y/2)*2+x/6][x/2%3]++;
+                    break;
+                case 2:
+                    history.PrimoNum-=100;
+                    if(history.PrimoNum<0){
+                        history.PrimoNum+=100;
+                        break;
+                    }
+                    history.towerLevel[int(y/2)*2+x/6][x/2%3]++;
+                    break;
+                case 3:
+                    break;
+            }
+            textBoxShow(x,y);
+        }
         break;
     case 3:
         checkButtonPlace(x,y);
         break;
     }
-    qDebug()<<"out mousePressEvent";
+
+//    qDebug()<<"out mousePressEvent";
+}
+
+void Widget::mouseMoveEvent(QMouseEvent *event)
+{
+    if(mode!=2)return;
+    QPoint place = event->pos();//获得鼠标位置
+    place = this->mapFromGlobal(place);
+    int x=place.x()/blockWidth,y=place.y()/blockWidth;
+    textBoxShow(x,y);
+}
+void Widget::textBoxShow(int x,int y)
+{
+    if((x-1)%2==0&&(y-1)%2==0&&x<12&&(y/2<3||x/6==0)){
+        QString names[21]={
+            "火元素塔伤害提升","火元素塔攻速提升","火元素塔范围提升",
+            "风元素塔伤害提升","风元素塔攻速提升","风元素塔范围提升",
+            "冰元素塔伤害提升","冰元素塔攻速提升","冰元素塔范围提升",
+            "雷元素塔伤害提升","雷元素塔攻速提升","雷元素塔范围提升",
+            "岩元素塔价格降低","初始摩拉数增加10","获得的摩拉增加5%",
+            "水元素塔伤害提升","水元素塔减速提升","水元素塔范围提升",
+            "草元素塔伤害提升","草元素塔伤害提升","草元素塔伤害提升"};
+        QString showPrice = "";
+        if(history.towerLevel[(int(y/2)*2+x/6)][x/2%3]==0){
+            showPrice="\n升级需要40原石";
+        }else if(history.towerLevel[(int(y/2)*2+x/6)][x/2%3]==1){
+            showPrice="\n升级需要60原石";
+        }else if(history.towerLevel[(int(y/2)*2+x/6)][x/2%3]==2){
+            showPrice="\n升级需要100原石";
+        }
+        boxText.setText(names[(int(y/2)*2+x/6)*3+x/2%3]+showPrice);
+        box.move((x-0.28)*blockWidth,(y+1)*blockWidth);
+        box.show();
+    }else{
+        box.hide();
+    }
 }
 void Widget::paintEvent(QPaintEvent *)
 {
-    qDebug()<<"in paintEvent";
+//    qDebug()<<"in paintEvent";
     QPainter painter(this);
     QPixmap * pixmap;
     QRect rect;
@@ -570,7 +659,7 @@ void Widget::paintEvent(QPaintEvent *)
     int angle=0;
     QFont font("隶书");
     switch (mode){
-    case 0:
+    case 0://开始界面
         //调整角度
         if(timeNum%20>=10){
             angle=12;
@@ -644,7 +733,7 @@ void Widget::paintEvent(QPaintEvent *)
         painter.setPen(qRgb(255,125,0));
         painter.drawText(rect,"开始游戏");
         break;
-    case 1:
+    case 1://关卡选择界面
         for(int i=0;i<5;i++){
             for(int j=0;j<3;j++){
                 rect =QRect((i*2+2)*blockWidth+blockWidth*0.1,
@@ -653,10 +742,23 @@ void Widget::paintEvent(QPaintEvent *)
                             blockWidth*0.8);//定义一个方格大小的正方形
                 if(history.level>=(j*5+(i+1))){
                     pixmap=new QPixmap(":level/level-1-"+QString::number((j*5+(i+1)))+".png");
+                    painter.drawPixmap(rect,*pixmap);
+                    for(int x=1;x<=3;x++){
+                        rect =QRect((i*2+2)*blockWidth+blockWidth*(x*0.3-0.22),
+                                    (j*2+3)*blockWidth+blockWidth*0.06,
+                                    blockWidth*0.25,
+                                    blockWidth*0.25);
+                        if(x<=history.stars[j*5+i]){
+                            pixmap=new QPixmap(":map/star-true.png");
+                        }else{
+                            pixmap=new QPixmap(":map/star-false.png");
+                        }
+                        painter.drawPixmap(rect,*pixmap);
+                    }
                 }else{
                     pixmap=new QPixmap(":level/level-2-"+QString::number((j*5+(i+1)))+".png");
+                    painter.drawPixmap(rect,*pixmap);
                 }
-                painter.drawPixmap(rect,*pixmap);
             }
         }
         font.setPointSize(blockWidth/5*3-2);
@@ -679,6 +781,84 @@ void Widget::paintEvent(QPaintEvent *)
         rect =QRect(13.03*blockWidth,2.85*blockWidth,blockWidth,blockWidth*3.2);//定义一个方格大小的正方形
         painter.setPen(qRgb(255,0,36));
         painter.drawText(rect,"科技树");
+        break;
+    case 2://科技树界面
+        font.setPointSize(blockWidth/5*3-2);
+        painter.setFont(font);
+        rect =QRect(13*blockWidth,2*blockWidth,blockWidth,blockWidth);
+        pixmap=new QPixmap(":level/yvanShi.png");
+        painter.drawPixmap(rect,*pixmap);
+        rect =QRect(13*blockWidth,6*blockWidth,blockWidth,blockWidth);
+        pixmap=new QPixmap(":level/yvanShi.png");
+        painter.drawPixmap(rect,*pixmap);
+        rect=QRect(13.05*blockWidth,blockWidth*2.87,blockWidth,blockWidth*3.2);
+        painter.setPen(qRgb(255,128,0));
+        painter.drawText(rect,"科技树");
+        rect =QRect(13.03*blockWidth,2.85*blockWidth,blockWidth,blockWidth*3.2);//定义一个方格大小的正方形
+        painter.setPen(qRgb(255,0,36));
+        painter.drawText(rect,"科技树");
+        for(int i=0;i<6;i++){
+            for(int j=0;j<4;j++){
+                if(j<3||i<3){//判断不是右下角
+                    //炮塔图标
+                    rect =QRect((i*2+1)*blockWidth+blockWidth*0.1,
+                                (j*2+1)*blockWidth+blockWidth*0.1,
+                                blockWidth*0.8,
+                                blockWidth*0.8);//定义一个方格大小的正方形
+                        pixmap=new QPixmap(":cannon/cannon-"+QString::number((j*2+i/3)+1)+"-3.png");
+                    painter.drawPixmap(rect,*pixmap);
+                    //强化方向图标
+                    rect =QRect((i*2+1)*blockWidth+blockWidth*0.6,
+                                (j*2+1)*blockWidth+blockWidth*0.6,
+                                blockWidth*0.4,
+                                blockWidth*0.4);
+                    pixmap=new QPixmap(":cannon/technology"+QString::number((i)%3+1)+".png");
+                    painter.drawPixmap(rect,*pixmap);
+                    //显示升级星级情况
+                    for(int x=1;x<=3;x++){
+                        rect =QRect((i*2+1)*blockWidth+blockWidth*(x*0.3-0.22),
+                                    (j*2+1)*blockWidth+blockWidth*0.06,
+                                    blockWidth*0.25,
+                                    blockWidth*0.25);
+                        if(x<=history.towerLevel[j*2+i/3][i%3]){
+                            pixmap=new QPixmap(":map/star-true.png");
+                        }else{
+                            pixmap=new QPixmap(":map/star-false.png");
+                        }
+                        painter.drawPixmap(rect,*pixmap);
+                    }
+                }
+            }
+        }
+        //重置图标
+        rect =QRect(7*blockWidth+blockWidth*0.1,
+                    7*blockWidth+blockWidth*0.1,
+                    blockWidth*0.8,
+                    blockWidth*0.8);
+        pixmap=new QPixmap(":map/reset.png");
+        painter.drawPixmap(rect,*pixmap);
+        //显示原石数的框
+        rect =QRect(9*blockWidth,
+                    7*blockWidth,
+                    blockWidth*3,
+                    blockWidth*1);
+        pixmap=new QPixmap(":map/longblock.png");
+        painter.drawPixmap(rect,*pixmap);
+        //原石数量显示
+        font.setFamily("Arial Black");
+        font.setPointSize(blockWidth/3);
+        painter.setFont(font);
+        if(history.PrimoNum>999){
+            rect = QRect(9.5*blockWidth,7.1*blockWidth,blockWidth*2,blockWidth/3*2);
+        }else if(history.PrimoNum>99){
+            rect = QRect(9.85*blockWidth,7.1*blockWidth,blockWidth*2,blockWidth/3*2);
+        }else if(history.PrimoNum>9){
+            rect = QRect(10.2*blockWidth,7.1*blockWidth,blockWidth*2,blockWidth/3*2);
+        }else{
+            rect = QRect(10.55*blockWidth,7.1*blockWidth,blockWidth*2,blockWidth/3*2);
+        }
+        painter.setPen(qRgb(0, 155, 255));
+        painter.drawText(rect,QString::number((int)history.PrimoNum));
         break;
     case 3:
         //绘画右上方的信息框
@@ -750,7 +930,6 @@ void Widget::paintEvent(QPaintEvent *)
                             enemy[i][j]->place[1]*blockWidth/20-blockWidth/6+blockWidth/75,
                             blockWidth/3*((double)enemy[i][j]->bload/enemy[i][j]->maxBload),
                             blockWidth/20);
-                    qDebug()<<(double)enemy[i][j]->bload/enemy[i][j]->maxBload<<enemy[i][j]->bload<<enemy[i][j]->maxBload;
                     painter.setPen(Qt::NoPen);
                     painter.setBrush(Qt::red);
                     painter.drawRect(rect);
@@ -867,7 +1046,7 @@ void Widget::paintEvent(QPaintEvent *)
         break;
     default:break;
     }
-    qDebug()<<"out paintEvent";
+//    qDebug()<<"out paintEvent";
 }
 
 QPoint Widget::getBullet(const QPoint &p1, const QPoint &p2, double percentage) {

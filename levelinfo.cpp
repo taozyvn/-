@@ -165,7 +165,7 @@ void LevelInfo::getLevelInfo(int level)
         }
         enemyType[0]=8;
         enemy[0]=1;
-        enemyType[0]=5;
+        enemyType[14]=3;
         waveTime=12;
         break;
     }
